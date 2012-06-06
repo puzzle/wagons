@@ -1,0 +1,10 @@
+# Configure Rails Environment
+<%= app_root_initializer %>
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
+
+require File.join(ENV["APP_ROOT"], 'test', 'test_helper.rb')
+
+
+class ActiveSupport::TestCase  
+  self.reset_fixture_path File.expand_path("../fixtures", __FILE__)
+end

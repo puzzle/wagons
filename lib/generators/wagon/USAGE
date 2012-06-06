@@ -1,0 +1,7 @@
+Description:
+    Generates a new wagon
+
+Example:
+    rails generate wagon superliner
+
+    This will create a brand new wagon in vendor/wagons/superliner.

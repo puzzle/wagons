@@ -1,0 +1,7 @@
+= Here be Wagons!
+
+
+
+  rails generate wagon superliner
+  
+* Create gemspec for your application, add dependencies there

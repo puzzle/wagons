@@ -1,0 +1,7 @@
+require 'wagons'
+# require 'your_wagon_dependencies'
+require "<%= singular_name %>/wagon"
+
+module <%= class_name %>
+end
+

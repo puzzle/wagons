@@ -1,0 +1,9 @@
+source "http://rubygems.org"
+
+gemspec
+
+gem 'dummy_superliner', :path => 'vendor/wagons'
+
+group :development, :test do
+  gem 'sqlite3'
+end
