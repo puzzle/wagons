@@ -2,7 +2,8 @@
 
 begin
   require 'bundler/setup'
-rescue LoadError
+rescue LoadError => e
+  puts e.message
   puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
 

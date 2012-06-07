@@ -27,18 +27,10 @@ Bundler::GemHelper.install_tasks
 
 require 'rake/testtask'
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/*_test.rb'
-  t.verbose = false
+task :test do
+  puts "Testing wagons is a bit weird. So far, please run the following command directly in your shell:"
+  puts "(cd test/dummy/vendor/wagons/superliner && rake)"
 end
 
-namespace :test do
-  task :app do
-    cd File.join('test', 'dummy')
-    sh 'rake'
-  end
-end
 
 task :default => :test

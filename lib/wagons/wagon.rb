@@ -16,6 +16,7 @@ module Wagon
   
   # Find a wagon by its name.
   def self.find(name)
+    name = name.to_s
     all.find {|wagon| wagon.wagon_name == name || wagon.gem_name == name }
   end
   

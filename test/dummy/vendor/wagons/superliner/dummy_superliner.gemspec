@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ["TODO: Your email"]
   #s.homepage    = "TODO"
   s.summary     = "Superliner"
-  s.description = "TODO: description"
+  s.description = "Superliner description"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile"]
   s.test_files = Dir["test/**/*"]
