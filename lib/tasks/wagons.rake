@@ -1,3 +1,4 @@
+# The tasks available to the base application using wagons.
 
 namespace :wagon do
   desc "Run wagon migrations (options: VERSION=x, WAGON=abc, VERBOSE=false)"
@@ -102,6 +103,24 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     end
   end
 end
+
+namespace :db do
+    namespace :seed do
+        desc "Load core and wagon seeds into the current environment's database."
+        task :all => ['db:seed', 'wagon:seed']
+    end
+    
+    namespace :setup do
+        desc "Create the database, load the schema, initialize with the seed data for core and wagons"
+        task :all => ['db:setup', 'wagon:setup']
+    end
+    
+    namespace :reset do
+        desc "Recreate the database, load the schema, initialize with the seed data for core and wagons"
+        task :all => ['db:reset', 'wagon:setup']
+    end
+end
+
 
 # Load the wagons specified by WAGON or all available.
 def wagons

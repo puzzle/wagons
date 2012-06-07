@@ -106,7 +106,7 @@ module Wagon
   
   def seed_fixtures
     fixtures = root.join('db', 'fixtures')
-    [fixtures, File.join(fixtures, Rails.env)]
+    ENV['NO_ENV'] ? [fixtures] : [fixtures, File.join(fixtures, Rails.env)]
   end
 end
 
