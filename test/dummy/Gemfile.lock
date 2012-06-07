@@ -2,7 +2,21 @@ PATH
   remote: .
   specs:
     dummy (0.0.0)
+      sqlite3
       wagons
+
+PATH
+  remote: ../..
+  specs:
+    wagons (0.0.1)
+      rails (>= 3.2.3)
+      seed-fu-ndo
+
+PATH
+  remote: vendor/wagons/superliner
+  specs:
+    dummy_superliner (0.0.1)
+      dummy
 
 GEM
   remote: http://rubygems.org/
@@ -89,13 +103,11 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.33)
-    wagons (0.0.1)
-      rails (>= 3.2.3)
-      seed-fu-ndo
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   dummy!
-  sqlite3
+  dummy_superliner!
+  wagons!

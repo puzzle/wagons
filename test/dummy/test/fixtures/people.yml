@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+mom:
+  name: Your Mother
+  birthday: 2001-06-06
+
+pascal:
+  name: Pascal
+  birthday: 1980-08-12

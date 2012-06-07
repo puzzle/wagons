@@ -1,7 +1,21 @@
 = Here be Wagons!
 
+Wagons are extensions to your application train running on Rails. You can see them as plugins that extend the behavior of your specific Rails application. This framework makes it easy to create and manage them.
 
+== Setup
 
-  rails generate wagon superliner
+As always, add this declaration to your application's Gemfile
+
+  gem 'wagons'
   
-* Create gemspec for your application, add dependencies there
+If you do not have one yet, create a .gemspec file for your application. This allows Rubygems to see your application as a (virtual) gem, so your wagons can define a dependency on it. As with all gems, move your (production) dependencies to this gemspec (+add_dependency+) and simply call +gemspec+ inside your Gemfile.
+
+Now you are ready for your first wagon. Generate it with
+
+  rails generate wagon [name]
+
+== Under the hood
+
+TODO:
+* Wagonfile
+* Rake Tasks

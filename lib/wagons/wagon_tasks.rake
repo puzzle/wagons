@@ -1,3 +1,5 @@
+# These are the tasks included by the specific wagons
+
 
 begin
   require 'bundler/setup'
@@ -111,6 +113,17 @@ namespace :app do
     
   namespace :db do
     namespace :test do
+      # for sqlite, make sure to delete the test.sqlite3 from the main application
+      task :purge do 
+        abcs = ActiveRecord::Base.configurations
+        case abcs['test']['adapter']
+        when /sqlite/
+          dbfile = Rails.application.root.join(abcs['test']['database'])
+          File.delete(dbfile) if File.exist?(dbfile)
+        end
+      end
+      
+      # run wagon migrations and load seed data
       task :prepare do
         Rails.env = 'test'
         dependencies = (wagon.all_dependencies + [wagon])
@@ -120,11 +133,8 @@ namespace :app do
         
         # seed
         SeedFu.quiet = true unless ENV['VERBOSE']
-        SeedFu.fixture_paths = [
-            Rails.root.join('db/fixtures').to_s,
-            Rails.root.join('db/fixtures/test').to_s  ]
-            
-        Rails.application.load_seed
+        SeedFu.seed([ Rails.root.join('db/fixtures').to_s,
+                      Rails.root.join('db/fixtures/test').to_s ])
         dependencies.each { |d| d.load_seed }
       end
     end

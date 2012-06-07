@@ -2,8 +2,12 @@ source "http://rubygems.org"
 
 gemspec
 
-gem 'dummy_superliner', :path => 'vendor/wagons'
+gem 'wagons', :path => '../../'
 
-group :development, :test do
-  gem 'sqlite3'
-end
+# Include the wagons you want attached in Wagonfile. 
+# Do not check Wagonfile into source control.
+#
+# To create a Wagonfile suitable for development, run 'rake wagon:file'
+#
+wagonfile = File.expand_path('../Wagonfile', __FILE__)
+eval(File.read(wagonfile)) if File.exist?(wagonfile)

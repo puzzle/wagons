@@ -5,6 +5,13 @@ PATH
       dummy
 
 PATH
+  remote: /home/tgdzupa7/workspace/wagons
+  specs:
+    wagons (0.0.1)
+      rails (>= 3.2.3)
+      seed-fu-ndo
+
+PATH
   remote: /home/tgdzupa7/workspace/wagons/test/dummy
   specs:
     dummy (0.0.0)
@@ -96,9 +103,6 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.33)
-    wagons (0.0.1)
-      rails (>= 3.2.3)
-      seed-fu-ndo
 
 PLATFORMS
   ruby
@@ -106,3 +110,4 @@ PLATFORMS
 DEPENDENCIES
   dummy!
   dummy_superliner!
+  wagons!

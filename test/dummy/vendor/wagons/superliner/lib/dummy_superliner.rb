@@ -4,4 +4,3 @@ require "dummy_superliner/wagon"
 
 module DummySuperliner
 end
-

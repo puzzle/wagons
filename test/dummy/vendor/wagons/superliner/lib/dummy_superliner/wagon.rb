@@ -7,6 +7,7 @@ module DummySuperliner
 
     config.to_prepare do
       # extend application classes here
+      Person.belongs_to :city
     end 
   
   end

@@ -56,6 +56,20 @@ end
 FIN
       end
     end
+    gemfile = Rails.root.join('Gemfile')
+    content = File.read(gemfile)
+    unless content =~ /wagonfile/
+      File.open(gemfile, 'w') do |f|
+        f.puts content
+        f.puts "\n\n"
+        f.puts "# Include the wagon gems you want attached in Wagonfile. 
+# Do not check Wagonfile into source control.
+#
+# To create a Wagonfile suitable for development, run 'rake wagon:file'
+wagonfile = File.expand_path('../Wagonfile', __FILE__)
+eval(File.read(wagonfile)) if File.exist?(wagonfile)"
+      end
+    end
   end
   
   desc "list the loaded wagons"
