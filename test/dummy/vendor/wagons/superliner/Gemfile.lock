@@ -8,7 +8,7 @@ PATH
   remote: /home/tgdzupa7/workspace/wagons
   specs:
     wagons (0.0.1)
-      rails (>= 3.2.3)
+      rails (>= 3.2)
       seed-fu-ndo
 
 PATH
