@@ -78,11 +78,20 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     wagons.each {|p| puts p.wagon_name }
   end
   
+  desc "run the tests of WAGON"
   task :test do
+    ENV['CMD'] = 'bundle exec rake'
+    Rake::Task['wagon:exec'].invoke
+  end
+  
+  desc "execute CMD in WAGON's base directory"
+  task :exec do
     wagons.each do |w|
-      puts "*** TESTING #{w.wagon_name.upcase} ***" if wagons.size > 1
+      puts "\n*** #{w.wagon_name.upcase} ***" if wagons.size > 1
       rel_dir = w.root.to_s.sub(Rails.root.to_s + File::SEPARATOR, '')
-      with_clean_env { sh "(cd #{rel_dir} && bundle exec rake)" }
+      with_clean_env do
+        verbose(false) { sh "cd #{rel_dir} && #{ENV['CMD']}" }
+      end
     end
   end
   
