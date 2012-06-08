@@ -16,6 +16,23 @@ Now you are ready for your first wagon. Generate it with
 
 == Under the hood
 
+First of all, wagons are basically [Rails Engines]{http://api.rubyonrails.org/classes/Rails/Engine.html}, so make sure you are familiar with them. This framework here provides only a handfull of additions so your engines actually know your application:
+
+* Wagon Generator
+* Rake Tasks
+* Test Helper
+* Rails Script
+* Seed Data Features
+
+=== Rake Tasks
+
+==== Application
+
+==== Wagon
+
+
+
 TODO:
 * Wagonfile
 * Rake Tasks
+* No base migrations with wagons migrations loaded

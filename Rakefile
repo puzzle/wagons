@@ -21,16 +21,12 @@ RDoc::Task.new(:rdoc) do |rdoc|
 end
 
 
-
-
 Bundler::GemHelper.install_tasks
 
 require 'rake/testtask'
 
 task :test do
-  puts "Testing wagons is a bit weird. So far, please run the following command directly in your shell:"
-  puts "(cd test/dummy/vendor/wagons/superliner && rake)"
+  Bundler.with_clean_env { sh "(cd test/dummy && rake wagon:test -t)" }
 end
-
 
 task :default => :test

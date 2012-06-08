@@ -78,15 +78,11 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     wagons.each {|p| puts p.wagon_name }
   end
   
-  namespace :test do
-    desc "Create script to test all wagons at once"
-    task :script => :environment do
-      script = 'vendor/wagons/test_wagons.sh'
-      File.open(script, 'w') do |f|
-        wagons.each do |w|
-          f.puts "(echo && echo '*** TESTING #{w.wagon_name.upcase} ***' && cd #{w.root.to_s[(Rails.root.to_s.size+1)..-1]} && bundle exec rake)"
-        end
-      end
+  task :test do
+    wagons.each do |w|
+      puts "*** TESTING #{w.wagon_name.upcase} ***" if wagons.size > 1
+      rel_dir = w.root.to_s.sub(Rails.root.to_s + File::SEPARATOR, '')
+      with_clean_env { sh "(cd #{rel_dir} && bundle exec rake)" }
     end
   end
   
@@ -102,6 +98,11 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       abort %{Run `rake wagon:migrate` to update your database then try again.}
     end
   end
+end
+
+namespace :test do
+  desc "Test wagons (option WAGON=abc)"
+  task :wagons => 'wagon:test'
 end
 
 namespace :db do
@@ -129,3 +130,14 @@ def wagons
   puts "Please specify at least one valid WAGON" if wagons.blank?
   wagons
 end
+
+BUNDLER_VARS = %w(BUNDLE_GEMFILE RUBYOPT BUNDLE_BIN_PATH)
+
+# Bundler.with_clean_env does not work always. Probably better in v.1.1
+def with_clean_env
+  bundled_env = ENV.to_hash
+  BUNDLER_VARS.each{ |var| ENV.delete(var) }
+  yield
+ensure
+  ENV.replace(bundled_env.to_hash)
+end 
