@@ -73,18 +73,18 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     end
   end
   
-  desc "list the loaded wagons"
+  desc "List the loaded wagons"
   task :list => :environment do  # depend on environment to get correct order
     wagons.each {|p| puts p.wagon_name }
   end
   
-  desc "run the tests of WAGON"
+  desc "Run the tests of WAGON"
   task :test do
     ENV['CMD'] = 'bundle exec rake'
     Rake::Task['wagon:exec'].invoke
   end
   
-  desc "execute CMD in WAGON's base directory"
+  desc "Execute CMD in WAGON's base directory"
   task :exec do
     wagons.each do |w|
       puts "\n*** #{w.wagon_name.upcase} ***" if wagons.size > 1
@@ -94,6 +94,7 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       end
     end
   end
+  
   
   # desc "Raises an error if there are pending wagon migrations"
   task :abort_if_pending_migrations => :environment do
@@ -136,7 +137,7 @@ end
 def wagons
   to_load = ENV['WAGON'].blank? ? :all : ENV['WAGON'].split(",").map(&:strip)
   wagons = Wagon.all.select { |wagon| to_load == :all || to_load.include?(wagon.wagon_name) }
-  puts "Please specify at least one valid WAGON" if wagons.blank?
+  puts "Please specify at least one valid WAGON" if ENV['WAGON'].present? && wagons.blank?
   wagons
 end
 

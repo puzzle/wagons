@@ -141,5 +141,33 @@ namespace :app do
   end
 end
 
+def inherited_dependencies(all, gem_name)
+  if gem = Bundler.load.specs.find {|s| s.name == gem_name}
+    depts = gem.dependencies.collect(&:name)
+    if gem_name == Wagon.app_name
+      depts.reject! {|d| d =~ /^#{Wagon.app_name}_.+$/ }
+    end
+    unless all.include?(gem_name)
+      all << gem_name
+      depts.each {|d| inherited_dependencies(all, d) }
+    end
+  end
+end
+
+namespace :bundle do
+  task :package do
+    rt = Bundler.load
+    rt.cache
+    wagons = wagon.gemspec.dependencies.collect(&:name).select {|d| d =~ /^#{Wagon.app_name}(_.+)?$/ }
+    depts = []
+    wagons.each {|d| inherited_dependencies(depts, d) }
+    depts.collect! {|d| rt.specs.find {|s| s.name == d }.full_name }
+    depts.each do |d|
+      gem = File.join('vendor', 'cache', "#{d}.gem")
+      File.delete(gem) if File.exists?(gem)
+    end
+  end
+end
+
 
 task :default => :test
