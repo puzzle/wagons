@@ -64,6 +64,7 @@ module Wagon
   end
   
   # If true, this wagon may not be removed. Override as required.
+  # May return a string with a message, why the wagon must not be removed.
   def protect?
     false
   end
@@ -86,6 +87,10 @@ module Wagon
   # Unload seed data in db/fixtures.
   def unload_seed
     SeedFuNdo.unseed seed_fixtures
+  end
+  
+  def existing_seeds
+    SeedFuNdo.existing_seeds seed_fixtures
   end
   
   # Paths for migration files.

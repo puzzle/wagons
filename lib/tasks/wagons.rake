@@ -73,6 +73,18 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     end
   end
   
+  namespace :file do
+    desc "Create a Wagonfile for production"
+    task :prod => :environment do
+      file = Rails.root.join('Wagonfile.prod')
+      File.open(file, 'w') do |f|
+        Wagon.all.each do |w|
+          f.puts "gem '#{w.gem_name}', '#{w.version}'"
+        end
+      end
+    end
+  end
+  
   desc "List the loaded wagons"
   task :list => :environment do  # depend on environment to get correct order
     wagons.each {|p| puts p.wagon_name }
