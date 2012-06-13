@@ -26,7 +26,7 @@ Bundler::GemHelper.install_tasks
 require 'rake/testtask'
 
 task :test do
-  Bundler.with_clean_env { sh "cd test/dummy && rake wagon:test -t" }
+  Bundler.with_clean_env { sh "cd test/dummy && rake wagon:test  #{'-t' if Rake.application.options.trace}" }
 end
 
 task :default => :test

@@ -92,7 +92,7 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
   
   desc "Run the tests of WAGON"
   task :test do
-    ENV['CMD'] = 'bundle exec rake'
+    ENV['CMD'] = "bundle exec rake #{'-t' if Rake.application.options.trace}"
     Rake::Task['wagon:exec'].invoke
   end
   
