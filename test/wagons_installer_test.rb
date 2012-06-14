@@ -139,6 +139,15 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     assert_match /not found/, Wagons::Installer.uninstall(["#{app_name}_fantasy"])
   end
   
+  test "wagon class can load class from anywhere" do
+    Wagons::Installer.unstub(:wagon_class)
+    dir = File.expand_path('../dummy/vendor/wagons/superliner', __FILE__)
+    spec = Gem::Specification.load(File.join(dir, 'dummy_superliner.gemspec'))
+    spec.stubs(:gem_dir).returns(dir)
+    assert_equal 'DummySuperliner::Wagon', Wagons::Installer.wagon_class(spec).name
+    assert Wagons::Installer.wagon_class(spec).app_requirement.satisfied_by?(Gem::Version.new('1.0'))
+  end
+  
   private
   
   def setup_gems

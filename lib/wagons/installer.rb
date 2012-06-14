@@ -99,10 +99,6 @@ module Wagons
         check_all_dependencies(specs, future, missing)
       end
       
-      def wagon(spec)
-        
-      end
-  
       # Check if the app requirement of the given gem specifications
       # are met by the current app version.
       # Returns nil if everything is fine or a array with error messages.
@@ -167,8 +163,10 @@ module Wagons
         clazz = nil
         file = File.join(spec.gem_dir, 'lib', spec.name, 'wagon.rb')
         if File.exists?(file)
-          eval(File.read(file))
-          clazz = "#{spec.name.classify}::Wagon".constantize rescue nil
+          require file
+          clazz = "#{spec.name.camelize}::Wagon".constantize
+        else
+          raise "#{spec.name} wagon class not found in #{file}"
         end
         @wagon_classes[spec] = clazz
       end
