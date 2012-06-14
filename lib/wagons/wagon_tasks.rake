@@ -154,20 +154,37 @@ def inherited_dependencies(all, gem_name)
   end
 end
 
+def delete_gem(name)
+  gem = File.join('vendor', 'cache', "#{name}.gem")
+  File.delete(gem) if File.exists?(gem)
+end
+
 namespace :bundle do
   task :package do
     rt = Bundler.load
     rt.cache
-    wagons = wagon.gemspec.dependencies.collect(&:name).select {|d| d =~ /^#{Wagon.app_name}(_.+)?$/ }
+    
+    wagons = wagon.gemspec.runtime_dependencies.collect(&:name).select {|d| d =~ /^#{Wagon.app_name}(_.+)?$/ }
     depts = []
     wagons.each {|d| inherited_dependencies(depts, d) }
     depts.collect! {|d| rt.specs.find {|s| s.name == d }.full_name }
     depts.each do |d|
-      gem = File.join('vendor', 'cache', "#{d}.gem")
-      File.delete(gem) if File.exists?(gem)
+      delete_gem(d)
+    end
+    
+    gems = wagon.gemspec.runtime_dependencies.collect(&:name).select {|d| d !~ /^#{Wagon.app_name}(_.+)?$/ }
+    depts = []
+    gems.each {|d| inherited_dependencies(depts, d) }
+    depts.collect! {|d| rt.specs.find {|s| s.name == d }.full_name }
+    
+    Dir.glob("vendor/cache/*.gem").each do |file|
+      unless depts.include?(File.basename(file, '.gem'))
+        File.delete(file)
+      end
     end
   end
 end
+
 
 
 task :default => :test

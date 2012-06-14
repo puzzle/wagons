@@ -46,6 +46,8 @@ class WagonTest < ActiveSupport::TestCase
     assert_equal [], wagon.all_dependencies
   end
   
-  
+  test "existing seeds" do
+    assert_equal({City => City.where(:name => 'Paris')}, wagon.existing_seeds)
+  end
   
 end

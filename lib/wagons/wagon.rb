@@ -89,8 +89,11 @@ module Wagon
     SeedFuNdo.unseed seed_fixtures
   end
   
+  # Hash of the seed models to their existing records.
   def existing_seeds
-    SeedFuNdo.existing_seeds seed_fixtures
+    silence_stream(STDOUT) do
+      SeedFuNdo.existing_seeds seed_fixtures
+    end
   end
   
   # Paths for migration files.
