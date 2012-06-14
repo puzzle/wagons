@@ -31,7 +31,12 @@ Rake::TestTask.new(:test) do |test|
 end
 
 task :test do
-  with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
+  begin
+    with_clean_env { sh "cd test/dummy && rails g wagon test_wagon"}
+    with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
+  ensure
+    sh "rm -rf test/dummy/vendor/wagons/test_wagon"
+  end
 end
 
 task :default => :test

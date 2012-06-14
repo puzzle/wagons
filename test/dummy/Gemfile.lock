@@ -10,6 +10,11 @@ PATH
   specs:
     dummy_superliner (0.0.1)
 
+PATH
+  remote: vendor/wagons/test_wagon
+  specs:
+    dummy_test_wagon (0.0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -104,6 +109,7 @@ PLATFORMS
 
 DEPENDENCIES
   dummy_superliner!
+  dummy_test_wagon!
   mocha
   sqlite3
   wagons!
