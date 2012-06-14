@@ -42,6 +42,24 @@ namespace :wagon do
     end
   end
   
+  desc "Generate an initializer to set the application version"
+  task :app_version do
+    file = Rails.root.join('config', 'initializers', 'wagon_app_version.rb')
+    unless File.exist?(file)
+      File.open(file, 'w') do |f|
+        f.puts <<FIN
+Wagon.app_version = '1.0.0'
+
+Wagon.all.each do |wagon|
+  unless wagon.app_requirement.satisfied_by?(Wagon.app_version)
+    raise "\#{wagon.gem_name} requires application version \#{wagon.app_requirement}; got \#{Wagon.app_version}"
+  end
+end
+FIN
+      end
+    end
+  end
+  
   desc "Creates a Wagonfile for development"
   task :file do
     file = Rails.root.join('Wagonfile')

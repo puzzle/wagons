@@ -24,9 +24,25 @@ end
 Bundler::GemHelper.install_tasks
 
 require 'rake/testtask'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'test'
+  test.pattern = 'test/*_test.rb'
+  test.verbose = true
+end
 
 task :test do
-  Bundler.with_clean_env { sh "cd test/dummy && rake wagon:test  #{'-t' if Rake.application.options.trace}" }
+  with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
 end
 
 task :default => :test
+
+
+# Bundler.with_clean_env does not work always. Probably better in v.1.1
+BUNDLER_VARS = %w(BUNDLE_GEMFILE RUBYOPT BUNDLE_BIN_PATH)
+def with_clean_env
+  bundled_env = ENV.to_hash
+  BUNDLER_VARS.each{ |var| ENV.delete(var) }
+  yield
+ensure
+  ENV.replace(bundled_env.to_hash)
+end 

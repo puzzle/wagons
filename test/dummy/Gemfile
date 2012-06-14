@@ -1,8 +1,14 @@
 source "http://rubygems.org"
 
-gemspec
+gem 'wagons', :path => File.expand_path(__FILE__).split("test#{File::SEPARATOR}dummy").first
 
-gem 'wagons', :path => '../../'
+group :development, :test do
+  gem 'sqlite3'
+end
+
+group :test do
+  gem 'mocha', :require => false
+end
 
 # Include the wagons you want attached in Wagonfile. 
 # Do not check Wagonfile into source control.

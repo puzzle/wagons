@@ -3,6 +3,8 @@ require 'seed-fu-ndo'
 require 'wagons/wagon'
 require 'wagons/railtie'
 require 'wagons/test_case'
+require 'wagons/installer'
+require 'wagons/version'
 
 module Wagons
 end

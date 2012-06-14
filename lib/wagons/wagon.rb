@@ -1,12 +1,21 @@
+require 'active_support/concern'
+
 # A wagon is an extension to your application train running on Rails.
 # 
 # Wagons are built on Rails Engines. To change an engine to a wagon,
 # simply include this module into your own Engine.
 module Wagon
+  extend ActiveSupport::Concern
   
   # All wagons installed in the current Rails application.
   def self.all
     Rails.application.railties.all.select {|r| r.is_a?(Wagon) }
+  end
+  
+  # Find a wagon by its name.
+  def self.find(name)
+    name = name.to_s
+    all.find {|wagon| wagon.wagon_name == name || wagon.gem_name == name }
   end
   
   # The name of the main Rails application.
@@ -14,10 +23,12 @@ module Wagon
     Rails.application.class.name.split('::').first.underscore
   end
   
-  # Find a wagon by its name.
-  def self.find(name)
-    name = name.to_s
-    all.find {|wagon| wagon.wagon_name == name || wagon.gem_name == name }
+  def self.app_version
+    @app_version ||= Gem::Version.new("0")
+  end
+  
+  def self.app_version=(version)
+    @app_version = version.is_a?(Gem::Version) ? version : Gem::Version.new(version)
   end
   
   # Version from the gemspec.
@@ -96,6 +107,11 @@ module Wagon
     end
   end
   
+  # The version requirement for the main application.
+  def app_requirement
+    self.class.app_requirement
+  end
+  
   # Paths for migration files.
   def migrations_paths
     paths['db/migrate'].existent
@@ -115,6 +131,19 @@ module Wagon
   def seed_fixtures
     fixtures = root.join('db', 'fixtures')
     ENV['NO_ENV'] ? [fixtures] : [fixtures, File.join(fixtures, Rails.env)]
+  end
+  
+  module ClassMethods
+    # Get or set a version requirement for the main application.
+    # Set the application version in config/initializers/wagon_app_version.rb.
+    # Gem::Requirement syntax is supported.
+    def app_requirement(requirement = nil)
+      if requirement
+        @app_requirement = Gem::Requirement.new(requirement)
+      else
+        @app_requirement ||= Gem::Requirement.new
+      end
+    end
   end
 end
 

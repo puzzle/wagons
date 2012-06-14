@@ -7,8 +7,4 @@ source "http://rubygems.org"
 # development dependencies will be added by default to the :development group.
 gemspec
 
-group :development, :test do
-  gem 'wagons', :path => "#{ENV["APP_ROOT"]}/../.."
-  gem 'dummy', :path => ENV["APP_ROOT"]
-end
-
+eval File.read(File.expand_path('Gemfile', ENV['APP_ROOT']))
