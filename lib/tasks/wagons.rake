@@ -31,14 +31,17 @@ namespace :wagon do
   task :setup => [:migrate, :seed]
   
   desc "Remove the specified wagon"
-  task :remove do
-    if wagons.size != 1
-      puts "Please specify a WAGON to remove"
-    elsif message = wagons.first.protect?
-      puts message
+  task :remove => :environment do
+    if wagons.size == 0 || (wagons.size > 1 && ENV['WAGON'].blank?)
+      puts "Please specify a WAGON to remove, or WAGON=ALL to remove all"
     else
-      Rake::Task['wagon:unseed'].invoke
-      Rake::Task['wagon:revert'].invoke
+      messages = wagons.collect {|w| w.protect? }.compact
+      if messages.present?
+        puts messages
+      else
+        Rake::Task['wagon:unseed'].invoke
+        Rake::Task['wagon:revert'].invoke
+      end
     end
   end
   
@@ -145,6 +148,7 @@ namespace :test do
   task :wagons => 'wagon:test'
 end
 
+
 namespace :db do
     namespace :seed do
         desc "Load core and wagon seeds into the current environment's database."
@@ -160,12 +164,36 @@ namespace :db do
         desc "Recreate the database, load the schema, initialize with the seed data for core and wagons"
         task :all => ['db:reset', 'wagon:setup']
     end
+    
+    # DB schema should not be dumped if wagon migrations are loaded
+    dump_actions = Rake::Task[:'db:_dump'].actions
+    Rake::Task[:'db:_dump'].clear_actions
+
+    task :_dump do
+      migrator = ActiveRecord::Migrator.new(:up, ActiveRecord::Migrator.migrations_paths)
+      if migrator.migrated.size > migrator.migrations.size
+        puts "The database schema will not be dumped when there are loaded wagon migrations."
+        puts "To dump the application schema, please 'rake wagon:remove WAGON=ALL' wagons beforehand or reset the database."
+        
+        Rake::Task[:'db:_dump'].reenable
+      else
+        Rake::Task[:'db:_dump_rails'].invoke
+      end
+    end
+    
+    task :_dump_rails do
+      dump_actions.each { |a| a.call }
+      Rake::Task[:'db:_dump_rails'].reenable
+    end
 end
+
+
+
 
 
 # Load the wagons specified by WAGON or all available.
 def wagons
-  to_load = ENV['WAGON'].blank? ? :all : ENV['WAGON'].split(",").map(&:strip)
+  to_load = ENV['WAGON'].blank? || ENV['WAGON'] == 'ALL' ? :all : ENV['WAGON'].split(",").map(&:strip)
   wagons = Wagon.all.select { |wagon| to_load == :all || to_load.include?(wagon.wagon_name) }
   puts "Please specify at least one valid WAGON" if ENV['WAGON'].present? && wagons.blank?
   wagons
