@@ -3,7 +3,7 @@ module <%= class_name %>
     include ::Wagon
     
     # Set the required application version.
-    app_requirement '>= 1.0.0'
+    app_requirement '>= 0'
 
     # Add a load path for this specific Wagon
     #config.autoload_paths += %W( #{config.root}/lib )
