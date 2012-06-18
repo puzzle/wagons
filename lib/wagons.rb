@@ -9,7 +9,7 @@ require 'wagons/version'
 module Wagons
 end
 
-# Requires the specified argument but silently ignores an LoadErrors.
+# Requires the specified argument but silently ignores any LoadErrors.
 def optional_require(*args)
   require *args
 rescue LoadError
