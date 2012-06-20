@@ -32,8 +32,8 @@ end
 
 task :test do
   begin
-    with_clean_env { sh "cd test/dummy && rails g wagon test_wagon"}
-    with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
+    Bundler.with_clean_env { sh "cd test/dummy && rails g wagon test_wagon" }
+    Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
   ensure
     sh "rm -rf test/dummy/vendor/wagons/test_wagon"
   end
@@ -41,13 +41,3 @@ end
 
 task :default => :test
 
-
-# Bundler.with_clean_env does not work always. Probably better in v.1.1
-BUNDLER_VARS = %w(BUNDLE_GEMFILE RUBYOPT BUNDLE_BIN_PATH)
-def with_clean_env
-  bundled_env = ENV.to_hash
-  BUNDLER_VARS.each{ |var| ENV.delete(var) }
-  yield
-ensure
-  ENV.replace(bundled_env.to_hash)
-end 

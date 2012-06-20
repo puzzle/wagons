@@ -122,9 +122,18 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     wagons.each do |w|
       puts "\n*** #{w.wagon_name.upcase} ***" if wagons.size > 1
       rel_dir = w.root.to_s.sub(Rails.root.to_s + File::SEPARATOR, '')
-      with_clean_env do
-        verbose(false) { sh "cd #{rel_dir} && #{ENV['CMD']}" }
+      cmd = "cd #{rel_dir} && #{ENV['CMD']}"
+      Bundler.with_clean_env do
+        verbose(false) { sh cmd }
       end
+    end
+  end
+  
+  namespace :bundle do
+    desc "Run bundle update for all WAGONs"
+    task :update do
+      ENV['CMD'] = "bundle update --local"
+      Rake::Task['wagon:exec'].invoke
     end
   end
   
@@ -188,9 +197,6 @@ namespace :db do
 end
 
 
-
-
-
 # Load the wagons specified by WAGON or all available.
 def wagons
   to_load = ENV['WAGON'].blank? || ENV['WAGON'] == 'ALL' ? :all : ENV['WAGON'].split(",").map(&:strip)
@@ -199,13 +205,3 @@ def wagons
   wagons
 end
 
-BUNDLER_VARS = %w(BUNDLE_GEMFILE RUBYOPT BUNDLE_BIN_PATH)
-
-# Bundler.with_clean_env does not work always. Probably better in v.1.1
-def with_clean_env
-  bundled_env = ENV.to_hash
-  BUNDLER_VARS.each{ |var| ENV.delete(var) }
-  yield
-ensure
-  ENV.replace(bundled_env.to_hash)
-end 
