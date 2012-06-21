@@ -181,9 +181,13 @@ module Wagons
       private
       
       def load_available_specs
-        Dir[File.join(ENV['GEM_HOME'], 'specifications', "#{Wagons.app_name}_*.gemspec")].collect do |gemspec|
-          Gem::Specification.load(gemspec)
-        end
+        paths = [ENV['GEM_HOME']]
+        paths += (ENV['GEM_PATH'] || "").split(File::PATH_SEPARATOR)
+        paths.collect(&:presence).compact.collect do |path|
+          Dir[File.join(path, 'specifications', "#{Wagons.app_name}_*.gemspec")].collect do |gemspec|
+            Gem::Specification.load(gemspec)
+          end
+        end.flatten
       end
   
       def change_internal(names, *checks)
