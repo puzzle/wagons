@@ -107,3 +107,22 @@ the usual <tt>ruby -I test test/my_test.rb</tt> command.
 The +test_helper.rb+ of the main application is included in all wagon tests. Any additions in 
 this file are available in wagon tests as well. The only thing wagons need to do is reseting the
 fixture path to the wagon's test fixtures.
+
+=== Gem Bundling
+
+Bundler manages application dependencies, with a stress on application. Because wagons live
+inside your application during development, the app's +Gemfile+ is included in each wagon's +Gemfile+.
+Although Bundler manages an own <tt>Gemfile.lock</tt> for each wagon, it is NOT recommended to check these
+into source control. The <tt>Gemfile.lock</tt> of the application should be the single responsible for 
+gem versions.
+
+Unfortunately, adding wagon gems to the +Wagonfile+ in production also breaks with Bundler's approach
+of locking down application gems. Because of that, the <tt>--deployment</tt> option cannot be used 
+with wagons. If you install your gems from <tt>vendor/cache</tt> into <tt>vendor/bundle</tt> or so,
+you still get most of the benefits of using Bundler, including the guarantee for the very same gem 
+versions as used in development.
+
+Contributions to this or any other issues are very welcome.
+
+
+{<img src="https://secure.travis-ci.org/codez/wagons.png" />}[http://travis-ci.org/codez/wagons]

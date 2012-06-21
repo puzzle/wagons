@@ -1,9 +1,12 @@
 module Wagons
+  
+  # Helper class to install wagons into the current application.
+  # Wagons are searched for in the system gem repository.
   class Installer
     class << self
       # Gem specifications of all installed wagons.
       def installed
-        @installed ||= Wagon.all.collect(&:gemspec)
+        @installed ||= Wagons.all.collect(&:gemspec)
       end
   
       # Most recent gem specifications of all wagons available in GEM_HOME.
@@ -40,7 +43,9 @@ module Wagons
         end
       end
   
-      # Install or update the wagons with the given names.
+      # Install or update the wagons with the given names. I.e., adds the given
+      # wagon names to the Wagonfile. After that, the application needs to be 
+      # stopped, rake wagon:setup executed and restarted again.
       # Returns nil if everything is fine or a string with error messages.
       def install(names)
         change_internal(names, :check_dependencies) do |specs|
@@ -48,7 +53,9 @@ module Wagons
         end
       end
   
-      # Remove the wagons with the given names.
+      # Remove the wagons with the given names. I.e., reverts the migrations
+      # of the given wagon names if the wagon is not protected 
+      # and removes the entries from the Wagonfile.
       # Returns nil if everything is fine or a string with error messages.
       def uninstall(names)
         change_internal(names, :check_uninstalled_dependencies, :check_protected) do |specs|
@@ -106,7 +113,7 @@ module Wagons
         missing = []
         specs.each do |spec|
           if wagon = wagon_class(spec)
-            unless wagon.app_requirement.satisfied_by?(Wagon.app_version)
+            unless wagon.app_requirement.satisfied_by?(Wagons.app_version)
               missing << "#{spec} requires application version #{wagon.app_requirement}"
             end
           end
@@ -128,7 +135,7 @@ module Wagons
       def check_protected(specs)
         protected = []
         specs.each do |spec|
-          msg = Wagon.find(spec.name).protect?
+          msg = Wagons.find(spec.name).protect?
           protected << msg if msg.is_a?(String)
         end
         protected.join("\n").presence
@@ -174,7 +181,7 @@ module Wagons
       private
       
       def load_available_specs
-        Dir[File.join(ENV['GEM_HOME'], 'specifications', "#{Wagon.app_name}_*.gemspec")].collect do |gemspec|
+        Dir[File.join(ENV['GEM_HOME'], 'specifications', "#{Wagons.app_name}_*.gemspec")].collect do |gemspec|
           Gem::Specification.load(gemspec)
         end
       end
@@ -204,7 +211,7 @@ module Wagons
       def check_all_dependencies(to_check, all, missing = [])
         to_check.each do |spec|
           spec.runtime_dependencies.each do |dep|
-            if dep.name.start_with?("#{Wagon.app_name}_") &&
+            if dep.name.start_with?("#{Wagons.app_name}_") &&
             all.none? {|s| dep.matches_spec?(s) }
               missing << "#{spec.name} requires #{dep.name} #{dep.requirement}"
             end
@@ -232,7 +239,7 @@ module Wagons
       end
       
       def remove_wagons(specs)
-        Wagon.all.reverse.each do |wagon|
+        Wagons.all.reverse.each do |wagon|
           if specs.find {|spec| wagon.gem_name == spec.name }
             wagon.unload_seed
             wagon.revert

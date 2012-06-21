@@ -157,7 +157,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     @superliner1 = gemspec('superliner', '1.0.0')
     @superliner2 = gemspec('superliner', '2.0.0')
     
-    Wagon.app_version = '1.0.0'
+    Wagons.app_version = '1.0.0'
   end
   
   def stub_installer
@@ -169,7 +169,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   end
   
   def stub_wagons
-    Wagon.stubs(:find).returns(stub(:protect? => false))
+    Wagons.stubs(:find).returns(stub(:protect? => false))
   end
   
   def create_wagonfile
@@ -185,7 +185,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   end
   
   def app_name
-    @app_name ||= Wagon.app_name
+    @app_name ||= Wagons.app_name
   end
   
   def gemspec(name, version, dependency = nil)

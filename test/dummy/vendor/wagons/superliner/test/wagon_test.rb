@@ -3,19 +3,19 @@ require 'test_helper'
 class WagonTest < ActiveSupport::TestCase
   attr_reader :wagon
   def setup
-    @wagon = Wagon.find(:superliner)
+    @wagon = Wagons.find(:superliner)
   end
   
   test "all includes current wagon" do
-    assert Wagon.all.include?(wagon)
+    assert Wagons.all.include?(wagon)
   end
   
   test "app name is correct" do
-    assert_equal 'dummy', Wagon.app_name
+    assert_equal 'dummy', Wagons.app_name
   end
   
   test "find for inexisting return nil" do
-    assert_nil Wagon.find(:not_existing)
+    assert_nil Wagons.find(:not_existing)
   end
   
   test "version can be read from gemspec" do

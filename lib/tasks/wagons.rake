@@ -51,11 +51,11 @@ namespace :wagon do
     unless File.exist?(file)
       File.open(file, 'w') do |f|
         f.puts <<FIN
-Wagon.app_version = '1.0.0'
+Wagons.app_version = '1.0.0'
 
-Wagon.all.each do |wagon|
-  unless wagon.app_requirement.satisfied_by?(Wagon.app_version)
-    raise "\#{wagon.gem_name} requires application version \#{wagon.app_requirement}; got \#{Wagon.app_version}"
+Wagons.all.each do |wagon|
+  unless wagon.app_requirement.satisfied_by?(Wagons.app_version)
+    raise "\#{wagon.gem_name} requires application version \#{wagon.app_requirement}; got \#{Wagons.app_version}"
   end
 end
 FIN
@@ -99,7 +99,7 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     task :prod => :environment do
       file = Rails.root.join('Wagonfile.prod')
       File.open(file, 'w') do |f|
-        Wagon.all.each do |w|
+        Wagons.all.each do |w|
           f.puts "gem '#{w.gem_name}', '#{w.version}'"
         end
       end
@@ -200,7 +200,7 @@ end
 # Load the wagons specified by WAGON or all available.
 def wagons
   to_load = ENV['WAGON'].blank? || ENV['WAGON'] == 'ALL' ? :all : ENV['WAGON'].split(",").map(&:strip)
-  wagons = Wagon.all.select { |wagon| to_load == :all || to_load.include?(wagon.wagon_name) }
+  wagons = Wagons.all.select { |wagon| to_load == :all || to_load.include?(wagon.wagon_name) }
   puts "Please specify at least one valid WAGON" if ENV['WAGON'].present? && wagons.blank?
   wagons
 end

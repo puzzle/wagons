@@ -3,3 +3,5 @@ log/*.log
 pkg/
 doc/rdoc
 
+# Ignore wagon's Gemfile.lock; let main application's Gemfile.lock be the single point of gem version definition.
+Gemfile.lock

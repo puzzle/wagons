@@ -1,4 +1,4 @@
-class WagonGenerator < Rails::Generators::NamedBase
+class WagonGenerator < Rails::Generators::NamedBase #:nodoc:
   
   attr_reader :wagon_name, :app_root_initializer
   

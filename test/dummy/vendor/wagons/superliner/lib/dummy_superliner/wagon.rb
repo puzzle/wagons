@@ -1,6 +1,6 @@
 module DummySuperliner
   class Wagon < Rails::Engine
-    include ::Wagon
+    include Wagons::Wagon
     
     # Add a load path for this specific Wagon
     #config.autoload_paths += %W( #{config.root}/lib )
