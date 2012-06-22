@@ -23,7 +23,7 @@ namespace :wagon do
   end
   
   desc "Unseed wagon data (options: WAGON=abc)"
-  task :unseed => :abort_if_pending_migrations do
+  task :unseed do
     wagons.reverse.each { |wagon| wagon.unload_seed }
   end
   
