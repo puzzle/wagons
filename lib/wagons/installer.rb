@@ -1,7 +1,12 @@
+require 'open3'
+
 module Wagons
   
   # Helper class to install wagons into the current application.
   # Wagons are searched for in the system gem repository.
+  #
+  # If you want to use the #install method, add "gem 'open4'" to
+  # your Gemfile.
   class Installer
     class << self
       # Gem specifications of all installed wagons.
@@ -44,12 +49,21 @@ module Wagons
       end
   
       # Install or update the wagons with the given names. I.e., adds the given
-      # wagon names to the Wagonfile. After that, the application needs to be 
-      # stopped, rake wagon:setup executed and restarted again.
+      # wagon names to the Wagonfile and runs rake wagon:setup.
+      # After that, the application MUST be restarted to load the new wagons.
       # Returns nil if everything is fine or a string with error messages.
+      # This method requires open4.
       def install(names)
         change_internal(names, :check_dependencies) do |specs|
+          content = File.read(wagonfile) rescue ""
           wagonfile_update(specs)
+          
+          begin
+            setup_wagons(specs)
+          rescue => e
+            wagonfile_write(content)
+            raise e
+          end
         end
       end
   
@@ -190,19 +204,6 @@ module Wagons
         end.flatten
       end
   
-      def change_internal(names, *checks)
-        specs = specs_from_names(names)
-        
-        if msg = perform_checks(specs, checks)
-          msg
-        else
-          yield specs
-          nil
-        end
-      rescue Exception => e
-        handle_exception(e, names)
-      end
-  
       def perform_checks(specs, checks)
         checks.each do |check|
           if msg = send(check, specs)
@@ -237,8 +238,25 @@ module Wagons
         end
         content.gsub!(/(\n\s*\n\s*)+/, "\n") # remove empty lines
   
+        wagonfile_write(content.strip)
+      end
+      
+      def wagonfile_write(content)
         File.open(wagonfile, 'w') do |f|
-          f.puts content.strip
+          f.puts content
+        end
+      end
+      
+      def setup_wagons(specs)
+        require 'open4'
+        
+        env = Rails.env
+        cmd = setup_command(specs)
+        Rails.logger.info(cmd)
+        
+        Bundler.with_clean_env do
+          ENV['RAILS_ENV'] = env
+          execute_setup(cmd)
         end
       end
       
@@ -250,7 +268,36 @@ module Wagons
           end
         end
       end
-  
+          
+      def setup_command(specs)
+        wagons = specs.collect {|s| s.name.sub(/^#{Wagons.app_name}_/, '') }.join(',')
+        "cd #{Rails.root} && bundle exec rake wagon:setup WAGON=#{wagons} -t"
+      end
+      
+      def execute_setup(cmd)
+        msg = nil
+        status = Open4.popen4(cmd) do |pid, input, output, errors|
+          msg = errors.read
+        end
+        
+        if status.exitstatus.to_i != 0
+          raise msg.presence || "Unknown error while running wagon:setup"
+        end
+      end
+      
+      def change_internal(names, *checks)
+        specs = specs_from_names(names)
+        
+        if msg = perform_checks(specs, checks)
+          msg
+        else
+          yield specs
+          nil
+        end
+      rescue Exception => e
+        handle_exception(e, names)
+      end
+      
       def handle_exception(e, names)
         msg = e.message
         Rails.logger.error msg + "\n\t" + e.backtrace.join("\n\t")

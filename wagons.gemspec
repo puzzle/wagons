@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.add_dependency "seed-fu-ndo", ">= 0.0.2"
 
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "open4"
 end

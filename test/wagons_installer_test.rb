@@ -106,9 +106,19 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   end
   
   test "install runs when checks are fine" do
+    Wagons::Installer.stubs(:setup_command).returns("echo $RAILS_ENV > env.tmp")
     assert_nil Wagons::Installer.install(["#{app_name}_master"])
     content = File.read(WAGONFILE)
     assert_match /^gem '#{app_name}_master', '2.0.0'$/, content
+    assert_equal 'test', File.read('env.tmp').strip
+    File.delete('env.tmp')
+  end
+  
+  test "install fails when setup command fails" do
+    Wagons::Installer.stubs(:setup_command).returns("echo $RAILS_ENV; echo 'its a bug' >&2; exit 1")
+    assert_equal 'its a bug', Wagons::Installer.install(["#{app_name}_master"]).strip
+    content = File.read(WAGONFILE)
+    assert_match /^gem '#{app_name}_master', '1.0.0'$/, content
   end
   
   test "install fails when checks go wrong" do
