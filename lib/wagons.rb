@@ -2,9 +2,12 @@ require 'seed-fu-ndo'
 
 require 'wagons/wagon'
 require 'wagons/railtie'
-require 'wagons/test_case'
 require 'wagons/installer'
 require 'wagons/version'
+
+require 'wagons/extensions/require_optional'
+require 'wagons/extensions/test_case'
+
 
 # Utility class to find single wagons and provide additional information
 # about the main application.
@@ -45,11 +48,3 @@ module Wagons
   end
 end
 
-class Object
-  # Requires the specified argument but silently ignores any LoadErrors.
-  def optional_require(*args)
-    require *args
-  rescue LoadError
-    # that's fine, it's an optional require
-  end
-end

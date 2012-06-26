@@ -112,9 +112,9 @@ fixture path to the wagon's test fixtures.
 
 Bundler manages application dependencies, with a stress on application. Because wagons live
 inside your application during development, the app's +Gemfile+ is included in each wagon's +Gemfile+.
-Although Bundler manages an own <tt>Gemfile.lock</tt> for each wagon, it is NOT recommended to check these
-into source control. The <tt>Gemfile.lock</tt> of the application should be the single responsible for 
-gem versions.
+However, Bundler still keeps an own <tt>Gemfile.lock</tt> for each wagon, so you have to make sure to keep
+these up to date when you change your main application gems. The gem versions for the wagons should be
+the same as for the application. <tt>rake wagon:bundle:update</tt> is here to help you exactly with that.
 
 Unfortunately, adding wagon gems to the +Wagonfile+ in production also breaks with Bundler's approach
 of locking down application gems. Because of that, the <tt>--deployment</tt> option cannot be used 
