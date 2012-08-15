@@ -12,4 +12,10 @@ class PersonTest < ActiveSupport::TestCase
       person.city_id = 42
     end
   end
+  
+  test "wagon models are not loaded in main application tests" do
+    assert_raise(NameError) do
+      City.new
+    end
+  end
 end

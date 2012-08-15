@@ -105,12 +105,12 @@ Rake.application.invoke_task(:load_app)
 
 
 namespace :app do
-  task :environment do
-    # set migrations paths only to core to have db:test:prepare work as desired
-    ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
-  end
-    
   namespace :db do
+    task :load_config do
+      # set migrations paths to core only to have db:test:prepare work as desired
+      ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
+    end
+    
     namespace :test do
       # for sqlite, make sure to delete the test.sqlite3 from the main application
       task :purge do 
@@ -122,7 +122,8 @@ namespace :app do
         end
       end
       
-      # run wagon migrations and load seed data
+      # run wagon migrations and load seed data.
+      # append this to the regular app:db:test:prepare task.
       task :prepare do
         Rails.env = 'test'
         dependencies = (wagon.all_dependencies + [wagon])

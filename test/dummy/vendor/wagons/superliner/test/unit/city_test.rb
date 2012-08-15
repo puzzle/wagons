@@ -5,5 +5,8 @@ class CityTest < ActiveSupport::TestCase
     city = City.new
     assert !city.valid?
   end
-  
+ 
+  test "fixtures from wagon are loaded" do
+    assert_equal 'London', cities(:london).name
+  end
 end
