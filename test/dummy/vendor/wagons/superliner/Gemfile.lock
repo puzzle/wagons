@@ -6,7 +6,7 @@ PATH
 PATH
   remote: /home/tgdzupa7/workspace/wagons
   specs:
-    wagons (0.0.7)
+    wagons (0.0.8)
       bundler (>= 1.1)
       rails (>= 3.2)
       seed-fu-ndo (>= 0.0.2)
