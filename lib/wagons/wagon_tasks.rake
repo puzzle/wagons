@@ -98,6 +98,8 @@ namespace :db do
   
   desc "Display status of migrations"
   app_task "migrate:status"
+  
+  app_task "test:prepare"
 end
 
 

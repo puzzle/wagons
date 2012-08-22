@@ -6,4 +6,6 @@ test/dummy/db/*.sqlite3
 test/dummy/log/*.log
 test/dummy/tmp/
 test/dummy/.sass-cache
+test/dummy/Gemfile.lock
+test/dummy/vendor/wagons/superliner/Gemfile.lock
 .rvmrc
