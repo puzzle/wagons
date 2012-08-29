@@ -1,5 +1,3 @@
-require 'open3'
-
 module Wagons
   
   # Helper class to install wagons into the current application.
@@ -8,6 +6,12 @@ module Wagons
   # If you want to use the #install method, add "gem 'open4'" to
   # your Gemfile.
   class Installer
+    
+    attr_accessor :include_version_in_wagonfile
+    
+    def initialize
+      @include_version_in_wagonfile = true
+    end
     
     # Gem specifications of all installed wagons.
     def installed
@@ -93,7 +97,8 @@ module Wagons
     # Update the Wagonfile with the given gem specifications.
     def wagonfile_update(specs)
       wagonfile_edit(specs) do |spec, content|
-        declaration = "gem '#{spec.name}', '#{spec.version.to_s}'"
+        declaration = "gem '#{spec.name}'"
+        declaration += ", '#{spec.version.to_s}'" if include_version_in_wagonfile
         unless content.sub!(gem_declaration_regexp(spec.name), declaration)
           content += "\n#{declaration}"
         end
