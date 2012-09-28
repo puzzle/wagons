@@ -88,6 +88,16 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     assert_equal 3, content.each_line.count, content
   end
   
+  test "wagonfile update keeps existing and add new entries if version should not be included in wagonfile" do
+    installer.include_version_in_wagonfile = false
+    installer.wagonfile_update([@master2, @slave1, @superliner2])
+    content = File.read(WAGONFILE)
+    assert_match /^gem '#{app_name}_master'$/, content
+    assert_match /^gem '#{app_name}_slave'$/, content
+    assert_match /^gem '#{app_name}_superliner'$/, content
+    assert_equal 3, content.each_line.count, content
+  end
+  
   test "wagonfile update updates commented gems" do
     File.open(WAGONFILE, 'w') do |f|
       f.puts "gem '#{app_name}_master', '1.0.0'"

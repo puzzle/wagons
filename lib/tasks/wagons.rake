@@ -37,7 +37,7 @@ namespace :wagon do
     else
       messages = wagons.collect {|w| w.protect? }.compact
       if messages.present?
-        puts messages
+        fail messages.join("\n")
       else
         Rake::Task['wagon:unseed'].invoke
         Rake::Task['wagon:revert'].invoke
