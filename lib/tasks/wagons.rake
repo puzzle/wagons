@@ -160,22 +160,21 @@ end
 
 namespace :db do
     namespace :seed do
-        desc "Load core and wagon seeds into the current environment's database."
-        task :all => ['db:seed', 'wagon:seed']
+      desc "Load core and wagon seeds into the current environment's database."
+      task :all => ['db:seed', 'wagon:seed']
     end
     
     namespace :setup do
-        desc "Create the database, load the schema, initialize with the seed data for core and wagons"
-        task :all => ['db:setup', 'wagon:setup']
+      desc "Create the database, load the schema, initialize with the seed data for core and wagons"
+      task :all => ['db:setup', 'wagon:setup']
     end
     
     namespace :reset do
-        desc "Recreate the database, load the schema, initialize with the seed data for core and wagons"
-        task :all => ['db:reset', 'wagon:setup']
+      desc "Recreate the database, load the schema, initialize with the seed data for core and wagons"
+      task :all => ['db:reset', 'wagon:setup']
     end
     
     # DB schema should not be dumped if wagon migrations are loaded
-    dump_actions = Rake::Task[:'db:_dump'].actions
     Rake::Task[:'db:_dump'].clear_actions
 
     task :_dump do
@@ -183,15 +182,20 @@ namespace :db do
       if migrator.migrated.size > migrator.migrations.size
         puts "The database schema will not be dumped when there are loaded wagon migrations."
         puts "To dump the application schema, please 'rake wagon:remove WAGON=ALL' wagons beforehand or reset the database."
-        
-        Rake::Task[:'db:_dump'].reenable
       else
         Rake::Task[:'db:_dump_rails'].invoke
       end
+      
+      Rake::Task[:'db:_dump'].reenable
     end
     
     task :_dump_rails do
-      dump_actions.each { |a| a.call }
+      case ActiveRecord::Base.schema_format
+      when :ruby then Rake::Task["db:schema:dump"].invoke
+      when :sql  then Rake::Task["db:structure:dump"].invoke
+      else
+        raise "unknown schema format #{ActiveRecord::Base.schema_format}"
+      end
       Rake::Task[:'db:_dump_rails'].reenable
     end
 end
