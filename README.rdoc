@@ -97,8 +97,6 @@ This is (currently) the cost for having arbitrary pluggable application extensio
 
 === Tests
 
-Wagons currently only supports <tt>Test::Unit</tt>.
-
 Wagons use your application for tests. This is also true for your application's test database. To get the
 correct setup, <tt>app:db:test:prepare</tt> is extended to run the migration of the current wagon and all its 
 dependencies, as well as their seed data. Once the database is set up, single tests may be run with
@@ -108,6 +106,9 @@ The +test_helper.rb+ of the main application is included in all wagon tests. Any
 this file are available in wagon tests as well. The only thing wagons need to do is reseting the
 fixture path to the wagon's test fixtures.
 
+RSpec works fine with wagons as well. Simply put the heading lines found in <tt>test_helper.rb</tt> into your
+<tt>spec_helper.rb</tt>.
+
 === Gem Bundling
 
 Bundler manages application dependencies, with a stress on application. Because wagons live
@@ -115,6 +116,7 @@ inside your application during development, the app's +Gemfile+ is included in e
 However, Bundler still keeps an own <tt>Gemfile.lock</tt> for each wagon, so you have to make sure to keep
 these up to date when you change your main application gems. The gem versions for the wagons should be
 the same as for the application. <tt>rake wagon:bundle:update</tt> is here to help you exactly with that.
+We recommend to NOT check in the Wagon's <tt>Gemfile.lock</tt> file into source control.
 
 Unfortunately, adding wagon gems to the +Wagonfile+ in production also breaks with Bundler's approach
 of locking down application gems. Because of that, the <tt>--deployment</tt> option cannot be used 
