@@ -5,6 +5,7 @@ require 'wagons/railtie'
 require 'wagons/installer'
 require 'wagons/version'
 
+require 'wagons/extensions/application'
 require 'wagons/extensions/require_optional'
 require 'wagons/extensions/test_case'
 
