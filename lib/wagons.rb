@@ -3,6 +3,7 @@ require 'seed-fu-ndo'
 require 'wagons/wagon'
 require 'wagons/railtie'
 require 'wagons/installer'
+require 'wagons/view_helper'
 require 'wagons/version'
 
 require 'wagons/extensions/application'

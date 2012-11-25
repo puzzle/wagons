@@ -16,7 +16,7 @@ Wagons differ from engines in a few points:
 
 == Setup
 
-As always, add this declaration to your application's Gemfile
+As always, add this declaration to your application's Gemfile:
 
   gem 'wagons'
 
@@ -46,6 +46,23 @@ If your wagon contains migrations and probably seed data, update your database w
 
 Leave off the +WAGON+ parameter to setup all wagons in your +Wagonfile+. This should not interfere with wagons that are
 already set up. Migrations are only run if they are not loaded yet, as usual.
+
+
+== Extending your application with a wagon
+
+Ruby and Rails provide all the magic required to extend your application from within a wagon.
+
+To add new models, controllers or views, simply create them in the +app+ directory of your wagon, as you would in a regular engine.
+
+To extend existing models and controllers, you may create modules with the required functionality. 
+Include them into your application classes in a +config.to_prepare+ block in <tt>lib/[wagon_name]/wagon.rb</tt>.
+
+To extend views, wagons provides a simple view helper that looks for partials in all view paths. Any template that
+might be extended by a wagon can include a call like this:
+
+  <%= render_extensions :details %>
+
+Any partials living in an equally named subfolder as the calling template and starting with the given key are rendered at this place.
 
 
 == Wagon dependencies
