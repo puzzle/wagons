@@ -34,14 +34,12 @@ module Wagons
     end
     
     def find_extension_files(key, folders)
+      folder_pattern = glob_pattern(folders)
+      formats = glob_pattern(lookup_context.formats)
+      handlers = glob_pattern(lookup_context.handlers)
+      
       view_paths.collect do |path|
-        folders.collect do |folder|
-          lookup_context.formats.collect do |format|
-            lookup_context.handlers.collect do |handler|
-              Dir.glob(File.join(path, folder, "_#{key}_*.#{format}.#{handler}"))
-            end
-          end
-        end
+        Dir.glob(File.join(path, folder_pattern, "_#{key}_*.#{formats}.#{handlers}"))
       end.flatten
     end
     
@@ -52,6 +50,14 @@ module Wagons
       end
     end
       
+    def glob_pattern(list)
+      if list.size == 1
+        list.first
+      else
+        "{#{list.join(',')}}"
+      end
+    end
+    
   end
 end
 
