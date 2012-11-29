@@ -124,9 +124,10 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       rel_dir = w.root.to_s.sub(Rails.root.to_s + File::SEPARATOR, '')
       cmd = "cd #{rel_dir} && #{ENV['CMD']}"
       Bundler.with_clean_env do
-        verbose(false) { sh cmd }
+        verbose(Rake.application.options.trace) { sh cmd }
       end
     end
+    Rake::Task['wagon:exec'].reenable
   end
   
   namespace :bundle do
