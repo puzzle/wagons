@@ -7,6 +7,6 @@ rescue LoadError
 end
 
 ENGINE_PATH = File.expand_path('..', __FILE__)
-<%= app_root_initializer %>
+require File.expand_path('../app_root', __FILE__)
 
 load 'wagons/wagon_tasks.rake'
