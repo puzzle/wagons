@@ -16,6 +16,26 @@ rescue LoadError
   RDoc::Task = Rake::RDocTask
 end
 
+APP_RAKEFILE = File.join(ENV['APP_ROOT'], "Rakefile")
+
+def app_task(name)
+  task name => [:load_app, "app:db:#{name}"]
+end
+
+def find_engine_path(path)
+  return if path == "/"
+
+  if Rails::Engine.find(path)
+    path
+  else
+    find_engine_path(File.expand_path('..', path))
+  end
+end
+
+def wagon
+  @wagon ||= Rails::Engine.find(ENGINE_PATH)
+end
+
 
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
@@ -37,26 +57,6 @@ end
 Bundler::GemHelper.install_tasks
 
 
-APP_RAKEFILE = File.join(ENV['APP_ROOT'], "Rakefile")
-
-def app_task(name)
-  task name => [:load_app, "app:db:#{name}"]
-end
-
-def find_engine_path(path)
-  return if path == "/"
-
-  if Rails::Engine.find(path)
-    path
-  else
-    find_engine_path(File.expand_path('..', path))
-  end
-end
-
-def wagon
-  @wagon ||= Rails::Engine.find(ENGINE_PATH)
-end
-
 task "load_app" do
   namespace :app do
     load APP_RAKEFILE
@@ -74,7 +74,7 @@ namespace :db do
   task :migrate => [:load_app, 'app:environment', 'app:db:load_config'] do
     wagon.migrate
   end
-  
+
   desc "Revert the database (options: VERSION=x, VERBOSE=false)."
   task :revert => [:load_app, 'app:environment', 'app:db:load_config'] do
     wagon.revert
@@ -89,16 +89,16 @@ namespace :db do
   task "unseed" => [:load_app, 'app:db:abort_if_pending_migrations'] do
     wagon.unload_seed
   end
-  
+
   desc "Run migrations and seed data (use db:reset to also revert the db first)"
   task :setup => [:migrate, :seed]
-  
+
   desc "Revert the database and set it up again"
   task :reset => [:unseed, :revert, :setup]
-  
+
   desc "Display status of migrations"
   app_task "migrate:status"
-  
+
   app_task "test:prepare"
 end
 
@@ -112,10 +112,10 @@ namespace :app do
       # set migrations paths to core only to have db:test:prepare work as desired
       ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
     end
-    
+
     namespace :test do
       # for sqlite, make sure to delete the test.sqlite3 from the main application
-      task :purge do 
+      task :purge do
         abcs = ActiveRecord::Base.configurations
         case abcs['test']['adapter']
         when /sqlite/
@@ -123,16 +123,16 @@ namespace :app do
           File.delete(dbfile) if File.exist?(dbfile)
         end
       end
-      
+
       # run wagon migrations and load seed data.
       # append this to the regular app:db:test:prepare task.
       task :prepare do
         Rails.env = 'test'
         dependencies = (wagon.all_dependencies + [wagon])
-        
-        # migrate 
+
+        # migrate
         dependencies.each { |d| d.migrate }
-        
+
         # seed
         SeedFu.quiet = true unless ENV['VERBOSE']
         SeedFu.seed([ Rails.root.join('db/fixtures').to_s,
