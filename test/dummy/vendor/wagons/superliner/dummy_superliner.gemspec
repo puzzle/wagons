@@ -7,8 +7,8 @@ require "dummy_superliner/version"
 Gem::Specification.new do |s|
   s.name        = "dummy_superliner"
   s.version     = DummySuperliner::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
+  s.authors     = ["Your name"]
+  s.email       = ["Your email"]
   #s.homepage    = "TODO"
   s.summary     = "Superliner"
   s.description = "Superliner description"

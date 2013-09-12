@@ -39,7 +39,7 @@ module Wagons
       handlers = glob_pattern(lookup_context.handlers)
       
       view_paths.collect do |path|
-        Dir.glob(File.join(path, folder_pattern, "_#{key}_*.#{formats}.#{handlers}"))
+        Dir.glob(File.join(path.to_s, folder_pattern, "_#{key}_*.#{formats}.#{handlers}"))
       end.flatten
     end
     

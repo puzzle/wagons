@@ -1,4 +1,4 @@
-source "http://rubygems.org"
+source "https://rubygems.org"
 
 # Declare your gem's dependencies in wagons.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -13,6 +13,7 @@ gemspec
 # To use debugger
 # gem 'ruby-debug'
 
+gem 'seed-fu', :git => 'https://github.com/mbleigh/seed-fu.git'
 
 group :test do
   gem 'mocha', :require => false

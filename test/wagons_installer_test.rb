@@ -148,7 +148,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     installer.expects(:remove_wagons).once
     assert_nil installer.uninstall(["#{app_name}_master", "#{app_name}_slave"])
     content = File.read(WAGONFILE)
-    assert_blank content
+    assert content.blank?
   end
   
   test "uninstall fails when checks go wrong" do

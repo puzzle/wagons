@@ -1,6 +1,8 @@
-source "http://rubygems.org"
+source "https://rubygems.org"
 
 gem 'wagons', :path => File.expand_path(__FILE__).split("test#{File::SEPARATOR}dummy").first
+
+gem 'seed-fu', :git => 'https://github.com/mbleigh/seed-fu.git'
 
 group :development, :test do
   gem 'sqlite3'
