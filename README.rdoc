@@ -80,7 +80,7 @@ so wagons can define a requirement. The application version can be set in an ini
   rake wagon:app_version
 
 Besides setting the version, this initializer will check all loaded wagons for their application requirement
-and raise an errors if one is not met. In <tt>lib/[wagon_name]/wagon.rb</tt> the requirement may be defined, e.g.:
+and raise errors if one is not met. In <tt>lib/[wagon_name]/wagon.rb</tt> the requirement may be defined, e.g.:
 
   app_requirement '>= 1.0'
 
@@ -132,7 +132,7 @@ RSpec works fine with wagons as well. Simply put the heading lines found in <tt>
 
 Bundler manages application dependencies, with a stress on application. Because wagons live
 inside your application during development, the app's +Gemfile+ is included in each wagon's +Gemfile+.
-However, Bundler still keeps an own <tt>Gemfile.lock</tt> for each wagon, so you have to make sure to keep
+However, Bundler still keeps a separate <tt>Gemfile.lock</tt> for each wagon, so you have to make sure to keep
 these up to date when you change your main application gems. The gem versions for the wagons should be
 the same as for the application. <tt>rake wagon:bundle:update</tt> is here to help you exactly with that.
 We recommend to NOT check in the Wagon's <tt>Gemfile.lock</tt> file into source control.
