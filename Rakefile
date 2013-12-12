@@ -4,6 +4,7 @@ begin
 rescue LoadError
   puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
+
 begin
   require 'rdoc/task'
 rescue LoadError
@@ -33,6 +34,7 @@ end
 task :test do
   begin
     Bundler.with_clean_env { sh "cd test/dummy && rails g wagon test_wagon" }
+    Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake wagon:bundle:update" }
     Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake db:migrate test  #{'-t' if Rake.application.options.trace}" }
     Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
   ensure

@@ -16,7 +16,9 @@ require 'wagons/extensions/test_case'
 module Wagons
   # All wagons installed in the current Rails application.
   def self.all
-    Rails.application.railties.all.select {|r| r.is_a?(Wagon) }
+    enumerable = Rails.application.railties
+    enumerable = enumerable.all if enumerable.respond_to?(:all)
+    enumerable.select {|r| r.is_a?(Wagon) }
   end
   
   # Find a wagon by its name.

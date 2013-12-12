@@ -9,3 +9,4 @@ test/dummy/.sass-cache
 test/dummy/Gemfile.lock
 test/dummy/vendor/wagons/superliner/Gemfile.lock
 .rvmrc
+.ruby-version
