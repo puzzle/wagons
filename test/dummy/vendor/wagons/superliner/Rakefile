@@ -8,6 +8,6 @@ rescue LoadError => e
 end
 
 ENGINE_PATH = File.expand_path('..', __FILE__)
-require File.expand_path('../app_root', __FILE__)
+load File.expand_path('../app_root.rb', __FILE__)
 
 load 'wagons/wagon_tasks.rake'
