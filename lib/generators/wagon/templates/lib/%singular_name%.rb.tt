@@ -4,4 +4,3 @@ require '<%= singular_name %>/wagon'
 
 module <%= class_name %>
 end
-
