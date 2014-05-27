@@ -5,5 +5,5 @@ class Object
   rescue LoadError
     # that's fine, it's an optional require
   end
-  alias optional_require require_optional
+  alias_method :optional_require, :require_optional
 end

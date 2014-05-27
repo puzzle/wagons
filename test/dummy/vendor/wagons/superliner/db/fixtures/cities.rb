@@ -1,1 +1,1 @@
-City.seed(:name, {:name => 'Paris'})
+City.seed(:name, name: 'Paris')

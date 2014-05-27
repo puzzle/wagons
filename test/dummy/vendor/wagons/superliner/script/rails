@@ -8,4 +8,4 @@ ENGINE_PATH = File.expand_path('lib/dummy_superliner/engine', ENGINE_ROOT)
 
 load File.expand_path('../../app_root.rb', __FILE__)
 
-load File.expand_path('script/rails', ENV["APP_ROOT"])
+load File.expand_path('script/rails', ENV['APP_ROOT'])

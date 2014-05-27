@@ -1,5 +1,4 @@
 class WagonGenerator < Rails::Generators::NamedBase #:nodoc:
-
   attr_reader :wagon_name
 
   source_root File.expand_path('../templates', __FILE__)
@@ -28,11 +27,10 @@ class WagonGenerator < Rails::Generators::NamedBase #:nodoc:
   private
 
   def all_templates
-    source_paths.collect do |path|
-      Dir[File.join(path, "**", "{*,.[a-z]*}")].
-          select {|f| File.file?(f) }.
-          collect {|f| f.sub(path + File::SEPARATOR, '') }
+    source_paths.map do |path|
+      Dir[File.join(path, '**', '{*,.[a-z]*}')].
+          select { |f| File.file?(f) }.
+          map { |f| f.sub(path + File::SEPARATOR, '') }
     end.flatten.uniq.sort
   end
-
 end

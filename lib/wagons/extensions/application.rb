@@ -1,6 +1,5 @@
 module Rails
   class Application < Engine
-    
     protected
 
     # Append wagons at the end of all railties, even after the application.
@@ -11,8 +10,7 @@ module Rails
         end
       end
     end
-    
+
     alias_method_chain :ordered_railties, :wagons
-    
   end
 end

@@ -21,7 +21,6 @@ RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-
 Bundler::GemHelper.install_tasks
 
 require 'rake/testtask'
@@ -33,14 +32,13 @@ end
 
 task :test do
   begin
-    Bundler.with_clean_env { sh "cd test/dummy && rails g wagon test_wagon" }
-    Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake wagon:bundle:update" }
+    Bundler.with_clean_env { sh 'cd test/dummy && rails g wagon test_wagon' }
+    Bundler.with_clean_env { sh 'cd test/dummy && bundle exec rake wagon:bundle:update' }
     Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake db:migrate test  #{'-t' if Rake.application.options.trace}" }
     Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
   ensure
-    sh "rm -rf test/dummy/vendor/wagons/test_wagon"
+    sh 'rm -rf test/dummy/vendor/wagons/test_wagon'
   end
 end
 
-task :default => :test
-
+task default: :test

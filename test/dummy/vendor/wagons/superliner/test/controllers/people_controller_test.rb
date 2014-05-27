@@ -1,8 +1,7 @@
 require 'test_helper'
 
 class PeopleControllerTest < ActionController::TestCase
-
-  test "extensions are rendered with locals" do
+  test 'extensions are rendered with locals' do
     get :index
     assert_template 'index'
     assert_template '_list_superliner'
@@ -12,5 +11,4 @@ class PeopleControllerTest < ActionController::TestCase
     assert_match /Superliner Details/, @response.body
     assert_no_match /Main Details/, @response.body
   end
-  
 end

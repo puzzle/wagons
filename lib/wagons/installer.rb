@@ -1,21 +1,19 @@
 module Wagons
-  
   # Helper class to install wagons into the current application.
   # Wagons are searched for in the system gem repository.
   #
   # If you want to use the #install method, add "gem 'open4'" to
   # your Gemfile.
   class Installer
-    
     attr_accessor :include_version_in_wagonfile
-    
+
     def initialize
       @include_version_in_wagonfile = true
     end
-    
+
     # Gem specifications of all installed wagons.
     def installed
-      @installed ||= Wagons.all.collect(&:gemspec)
+      @installed ||= Wagons.all.map(&:gemspec)
     end
 
     # Most recent gem specifications of all wagons available in GEM_HOME.
@@ -25,18 +23,17 @@ module Wagons
       # only keep most recent version in @available
       @available = []
       load_available_specs.each do |spec|
-        if prev = @available.find {|w| w.name == spec.name }
+        if prev = @available.find { |w| w.name == spec.name }
           if prev.version < spec.version
-          @available.delete(prev)
-          @available << spec
+            @available.delete(prev)
+            @available << spec
           end
         else
-        @available << spec
+          @available << spec
         end
       end
       @available
     end
-
 
     # Most recent gem specifications of available, but not installed (in any version) wagons.
     def not_installed
@@ -59,9 +56,9 @@ module Wagons
     # This method requires open4.
     def install(names)
       change_internal(names, :check_dependencies) do |specs|
-        content = File.read(wagonfile) rescue ""
+        content = File.read(wagonfile) rescue ''
         wagonfile_update(specs)
-        
+
         begin
           setup_wagons(specs)
         rescue => e
@@ -72,7 +69,7 @@ module Wagons
     end
 
     # Remove the wagons with the given names. I.e., reverts the migrations
-    # of the given wagon names if the wagon is not protected 
+    # of the given wagon names if the wagon is not protected
     # and removes the entries from the Wagonfile.
     # Returns nil if everything is fine or a string with error messages.
     def uninstall(names)
@@ -85,20 +82,20 @@ module Wagons
     # Get the gem specification of the installed wagon with the given name.
     # Return nil if not found.
     def installed_spec(name)
-      installed.find {|s| s.name == name }
+      installed.find { |s| s.name == name }
     end
 
     # Get the gem specification of an available wagon with the given name.
     # Return nil if not found.
     def available_spec(name)
-      available.find {|s| s.name == name}
+      available.find { |s| s.name == name }
     end
-    
+
     # Update the Wagonfile with the given gem specifications.
     def wagonfile_update(specs)
       wagonfile_edit(specs) do |spec, content|
         declaration = "gem '#{spec.name}'"
-        declaration += ", '#{spec.version.to_s}'" if include_version_in_wagonfile
+        declaration += ", '#{spec.version}'" if include_version_in_wagonfile
         unless content.sub!(gem_declaration_regexp(spec.name), declaration)
           content += "\n#{declaration}"
         end
@@ -112,7 +109,7 @@ module Wagons
         content.sub(gem_declaration_regexp(spec.name), '')
       end
     end
-    
+
     # Check if all wagon dependencies of the given gem specifications
     # are met by the installed wagons.
     # Returns nil if everything is fine or a string with error messages.
@@ -124,7 +121,7 @@ module Wagons
 
       check_all_dependencies(specs, future, missing)
     end
-    
+
     # Check if the app requirement of the given gem specifications
     # are met by the current app version.
     # Returns nil if everything is fine or a array with error messages.
@@ -140,7 +137,7 @@ module Wagons
 
       missing
     end
-    
+
     # Check if the wagon dependencies of the remaining wagons
     # would still be met after the given gem specifications are uninstalled.
     # Returns nil if everything is fine or a string with error messages.
@@ -163,47 +160,47 @@ module Wagons
     # List of available gem specifications with the given names.
     # Raises an error if a name cannot be found.
     def specs_from_names(names)
-      names.collect do |name| 
+      names.map do |name|
         spec = available_spec(name)
-        raise "#{name} was not found" if spec.nil?
+        fail "#{name} was not found" if spec.nil?
         spec
       end
     end
-    
+
     # Removes all gem specifications with the same name in to_be_excluded from full.
     # Versions are ignored.
     def exclude_specs(full, to_be_excluded)
-      full.clone.delete_if {|s| to_be_excluded.find {|d| s.name == d.name } }
+      full.clone.delete_if { |s| to_be_excluded.find { |d| s.name == d.name } }
     end
-    
+
     # Wagonfile
     def wagonfile
-      Rails.root.join("Wagonfile")
+      Rails.root.join('Wagonfile')
     end
-    
+
     # The wagon class of the given spec.
     def wagon_class(spec)
       @wagon_classes ||= {}
-      return @wagon_classes[spec] if @wagon_classes.has_key?(spec)
-      
+      return @wagon_classes[spec] if @wagon_classes.key?(spec)
+
       clazz = nil
       file = File.join(spec.gem_dir, 'lib', spec.name, 'wagon.rb')
-      if File.exists?(file)
+      if File.exist?(file)
         require file
         clazz = "#{spec.name.camelize}::Wagon".constantize
       else
-        raise "#{spec.name} wagon class not found in #{file}"
+        fail "#{spec.name} wagon class not found in #{file}"
       end
       @wagon_classes[spec] = clazz
     end
 
     private
-    
+
     def load_available_specs
       paths = [ENV['GEM_HOME']]
-      paths += (ENV['GEM_PATH'] || "").split(File::PATH_SEPARATOR)
-      paths.collect(&:presence).compact.collect do |path|
-        Dir[File.join(path, 'specifications', "#{Wagons.app_name}_*.gemspec")].collect do |gemspec|
+      paths += (ENV['GEM_PATH'] || '').split(File::PATH_SEPARATOR)
+      paths.map(&:presence).compact.map do |path|
+        Dir[File.join(path, 'specifications', "#{Wagons.app_name}_*.gemspec")].map do |gemspec|
           Gem::Specification.load(gemspec)
         end
       end.flatten
@@ -222,7 +219,7 @@ module Wagons
       to_check.each do |spec|
         spec.runtime_dependencies.each do |dep|
           if dep.name.start_with?("#{Wagons.app_name}_") &&
-          all.none? {|s| dep.matches_spec?(s) }
+          all.none? { |s| dep.matches_spec?(s) }
             missing << "#{spec.name} requires #{dep.name} #{dep.requirement}"
           end
         end
@@ -230,13 +227,13 @@ module Wagons
 
       missing.join("\n").presence
     end
-    
+
     def gem_declaration_regexp(name)
       /^.*gem\s+('|")#{name}('|").*$/
     end
-        
+
     def wagonfile_edit(specs)
-      content = File.read(wagonfile) rescue ""
+      content = File.read(wagonfile) rescue ''
 
       specs.each do |spec|
         content = yield spec, content
@@ -245,69 +242,68 @@ module Wagons
 
       wagonfile_write(content.strip)
     end
-    
+
     def wagonfile_write(content)
       File.open(wagonfile, 'w') do |f|
         f.puts content
       end
     end
-    
+
     def setup_wagons(specs)
       require 'open4'
-      
+
       env = Rails.env
       cmd = setup_command(specs)
       Rails.logger.info(cmd)
-      
+
       Bundler.with_clean_env do
         ENV['RAILS_ENV'] = env
         execute_setup(cmd)
       end
     end
-    
+
     def remove_wagons(specs)
       Wagons.all.reverse.each do |wagon|
-        if specs.find {|spec| wagon.gem_name == spec.name }
+        if specs.find { |spec| wagon.gem_name == spec.name }
           wagon.unload_seed
           wagon.revert
         end
       end
     end
-        
+
     def setup_command(specs)
-      wagons = specs.collect {|s| s.name.sub(/^#{Wagons.app_name}_/, '') }.join(',')
+      wagons = specs.map { |s| s.name.sub(/^#{Wagons.app_name}_/, '') }.join(',')
       "cd #{Rails.root} && bundle exec rake wagon:setup WAGON=#{wagons} -t"
     end
-    
+
     def execute_setup(cmd)
       msg = nil
       status = Open4.popen4(cmd) do |pid, input, output, errors|
         msg = errors.read
       end
-      
+
       if status.exitstatus.to_i != 0
-        raise msg.presence || "Unknown error while running wagon:setup"
+        fail msg.presence || 'Unknown error while running wagon:setup'
       end
     end
-    
+
     def change_internal(names, *checks)
       specs = specs_from_names(names)
-      
+
       if msg = perform_checks(specs, checks)
         msg
       else
         yield specs
         nil
       end
-    rescue Exception => e
+    rescue => e
       handle_exception(e, names)
     end
-    
+
     def handle_exception(e, names)
       msg = e.message
       Rails.logger.error msg + "\n\t" + e.backtrace.join("\n\t")
       msg
     end
-
   end
 end

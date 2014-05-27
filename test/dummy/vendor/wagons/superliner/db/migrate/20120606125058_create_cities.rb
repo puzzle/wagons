@@ -5,7 +5,7 @@ class CreateCities < ActiveRecord::Migration
 
       t.timestamps
     end
-    
+
     add_column :people, :city_id, :integer
   end
 end

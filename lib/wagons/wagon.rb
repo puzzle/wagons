@@ -1,7 +1,6 @@
 require 'active_support/concern'
 
 module Wagons
-
   # A wagon is an extension to your application train running on Rails.
   #
   # Wagons are built on Rails Engines. To change an engine to a wagon,
@@ -37,14 +36,14 @@ module Wagons
 
     # Direct dependencies on other wagons.
     def dependencies
-      gemspec.dependencies.collect(&:name).
-                           select {|dep| dep =~ /\A#{Wagons.app_name}_/ }.
-                           collect { |dep| Wagons.find(dep) || raise("No wagon #{dep} found") }
+      gemspec.dependencies.map(&:name).
+                           select { |dep| dep =~ /\A#{Wagons.app_name}_/ }.
+                           map { |dep| Wagons.find(dep) || fail("No wagon #{dep} found") }
     end
 
     # Recursive depdencies on other wagons.
     def all_dependencies
-      dependencies.collect {|dep| dep.all_dependencies + [dep] }.flatten.uniq
+      dependencies.map { |dep| dep.all_dependencies + [dep] }.flatten.uniq
     end
 
     # Gem Specification.
@@ -103,8 +102,8 @@ module Wagons
       end
 
       extend Rake::DSL if defined? Rake::DSL
-      self.class.rake_tasks.each { |block| self.instance_exec(app, &block) }
-      paths["lib/tasks"].existent.sort.each { |ext| load(ext) }
+      self.class.rake_tasks.each { |block| instance_exec(app, &block) }
+      paths['lib/tasks'].existent.sort.each { |ext| load(ext) }
       self
     end
 
@@ -129,4 +128,3 @@ module Wagons
     end
   end
 end
-
