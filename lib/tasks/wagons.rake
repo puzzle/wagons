@@ -8,7 +8,7 @@ namespace :wagon do
       wagon.migrate(ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
     end
   end
-  
+
   desc "Revert wagon migrations (options: WAGON=abc, VERBOSE=false)"
   task :revert => [:environment, :'db:load_config'] do
     ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
@@ -16,20 +16,20 @@ namespace :wagon do
       wagon.revert
     end
   end
-  
+
   desc "Seed wagon data (options: WAGON=abc)"
-  task :seed => :abort_if_pending_migrations do 
+  task :seed => :abort_if_pending_migrations do
     wagons.each { |wagon| wagon.load_seed }
   end
-  
+
   desc "Unseed wagon data (options: WAGON=abc)"
   task :unseed do
     wagons.reverse.each { |wagon| wagon.unload_seed }
   end
-  
+
   desc "Migrate and seed wagons"
   task :setup => [:migrate, :seed]
-  
+
   desc "Remove the specified wagon"
   task :remove => :environment do
     if wagons.size == 0 || (wagons.size > 1 && ENV['WAGON'].blank?)
@@ -44,7 +44,7 @@ namespace :wagon do
       end
     end
   end
-  
+
   desc "Generate an initializer to set the application version"
   task :app_version do
     file = Rails.root.join('config', 'initializers', 'wagon_app_version.rb')
@@ -62,7 +62,7 @@ FIN
       end
     end
   end
-  
+
   desc "Creates a Wagonfile for development"
   task :file do
     file = Rails.root.join('Wagonfile')
@@ -84,7 +84,7 @@ FIN
       File.open(gemfile, 'w') do |f|
         f.puts content
         f.puts "\n\n"
-        f.puts "# Include the wagon gems you want attached in Wagonfile. 
+        f.puts "# Include the wagon gems you want attached in Wagonfile.
 # Do not check Wagonfile into source control.
 #
 # To create a Wagonfile suitable for development, run 'rake wagon:file'
@@ -93,7 +93,7 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       end
     end
   end
-  
+
   namespace :file do
     desc "Create a Wagonfile for production"
     task :prod => :environment do
@@ -105,18 +105,18 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       end
     end
   end
-  
+
   desc "List the loaded wagons"
   task :list => :environment do  # depend on environment to get correct order
     wagons.each {|p| puts p.wagon_name }
   end
-  
+
   desc "Run the tests of WAGON"
   task :test do
     ENV['CMD'] = "bundle exec rake #{'-t' if Rake.application.options.trace}"
     Rake::Task['wagon:exec'].invoke
   end
-  
+
   desc "Execute CMD in WAGON's base directory"
   task :exec do
     wagons.each do |w|
@@ -129,7 +129,7 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     end
     Rake::Task['wagon:exec'].reenable
   end
-  
+
   namespace :bundle do
     desc "Run bundle update for all WAGONs"
     task :update do
@@ -137,11 +137,12 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       Rake::Task['wagon:exec'].invoke
     end
   end
-  
-  
+
+
   # desc "Raises an error if there are pending wagon migrations"
   task :abort_if_pending_migrations => :environment do
-    pending_migrations = ActiveRecord::Migrator.new(:up, wagons.collect(&:migrations_paths).flatten).pending_migrations
+    files = ActiveRecord::Migrator.migrations(wagons.collect(&:migrations_paths).flatten)
+    pending_migrations = ActiveRecord::Migrator.new(:up, files).pending_migrations
 
     if pending_migrations.any?
       puts "You have #{pending_migrations.size} pending migrations:"
@@ -164,17 +165,17 @@ namespace :db do
       desc "Load core and wagon seeds into the current environment's database."
       task :all => ['db:seed', 'wagon:seed']
     end
-    
+
     namespace :setup do
       desc "Create the database, load the schema, initialize with the seed data for core and wagons"
       task :all => ['db:setup', 'wagon:setup']
     end
-    
+
     namespace :reset do
       desc "Recreate the database, load the schema, initialize with the seed data for core and wagons"
       task :all => ['db:reset', 'wagon:setup']
     end
-    
+
     # DB schema should not be dumped if wagon migrations are loaded
     Rake::Task[:'db:_dump'].clear_actions
 
@@ -187,10 +188,10 @@ namespace :db do
       else
         Rake::Task[:'db:_dump_rails'].invoke
       end
-      
+
       Rake::Task[:'db:_dump'].reenable
     end
-    
+
     task :_dump_rails do
       case ActiveRecord::Base.schema_format
       when :ruby then Rake::Task["db:schema:dump"].invoke
