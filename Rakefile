@@ -30,14 +30,27 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-task :test do
+task :test => :set_rails_version do
+  def in_dummy(command)
+    version = "RAILS_VERSION=\"#{ENV['RAILS_VERSION']}\" " if ENV['RAILS_VERSION']
+    Bundler.with_clean_env { sh "cd test/dummy && #{version}#{command}" }
+  end
+
   begin
-    Bundler.with_clean_env { sh 'cd test/dummy && rails g wagon test_wagon' }
-    Bundler.with_clean_env { sh 'cd test/dummy && bundle exec rake wagon:bundle:update' }
-    Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake db:migrate test  #{'-t' if Rake.application.options.trace}" }
-    Bundler.with_clean_env { sh "cd test/dummy && bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}" }
+    in_dummy 'rm -rf Gemfile.lock'
+    in_dummy 'rails g wagon test_wagon'
+    in_dummy 'bundle exec rake wagon:bundle:update'
+    in_dummy "bundle exec rake db:migrate test  #{'-t' if Rake.application.options.trace}"
+    in_dummy "bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}"
   ensure
     sh 'rm -rf test/dummy/vendor/wagons/test_wagon'
+  end
+end
+
+task :set_rails_version do
+  if ENV['BUNDLE_GEMFILE']
+    version = File.read(ENV['BUNDLE_GEMFILE'])[/gem\s*'rails',\s*'(.*)'/, 1]
+    ENV['RAILS_VERSION'] = version
   end
 end
 

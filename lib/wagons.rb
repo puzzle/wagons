@@ -9,6 +9,9 @@ require 'wagons/version'
 require 'wagons/extensions/application'
 require 'wagons/extensions/require_optional'
 require 'wagons/extensions/test_case'
+if ::Rails::VERSION::STRING >= '4.1'
+  require 'wagons/extensions/migration'
+end
 
 # Utility class to find single wagons and provide additional information
 # about the main application.
@@ -48,5 +51,20 @@ module Wagons
   # Do this in an initializer.
   def self.app_version=(version)
     @app_version = version.is_a?(Gem::Version) ? version : Gem::Version.new(version)
+  end
+
+  # Returns the wagon that is currently executing a rake task or tests.
+  def self.current_wagon
+    @current_wagon ||= find_wagon(ENV['BUNDLE_GEMFILE'])
+  end
+
+  private
+
+  def self.find_wagon(path)
+    return if path.blank? || path == "/"
+
+    wagon = Rails::Engine.find(path)
+    return wagon if wagon
+    find_wagon(File.expand_path('..', path))
   end
 end

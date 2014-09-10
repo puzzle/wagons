@@ -32,10 +32,6 @@ def find_engine_path(path)
   end
 end
 
-def wagon
-  @wagon ||= Rails::Engine.find(ENGINE_PATH)
-end
-
 
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
@@ -43,7 +39,6 @@ Rake::TestTask.new(:test) do |t|
   t.pattern = 'test/**/*_test.rb'
   t.verbose = false
 end
-task :test => [:'app:db:test:prepare']
 
 RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'doc/rdoc'
@@ -72,22 +67,22 @@ end
 namespace :db do
   desc "Migrate the database (options: VERSION=x, VERBOSE=false)."
   task :migrate => [:load_app, 'app:environment', 'app:db:load_config'] do
-    wagon.migrate
+    Wagons.current_wagon.migrate
   end
 
   desc "Revert the database (options: VERSION=x, VERBOSE=false)."
   task :revert => [:load_app, 'app:environment', 'app:db:load_config'] do
-    wagon.revert
+    Wagons.current_wagon.revert
   end
 
   desc "Load the seed data"
   task "seed" => [:load_app, 'app:db:abort_if_pending_migrations'] do
-    wagon.load_seed
+    Wagons.current_wagon.load_seed
   end
 
   desc "Unload the seed data"
   task "unseed" => [:load_app, 'app:db:abort_if_pending_migrations'] do
-    wagon.unload_seed
+    Wagons.current_wagon.unload_seed
   end
 
   desc "Run migrations and seed data (use db:reset to also revert the db first)"
@@ -105,39 +100,33 @@ end
 
 Rake.application.invoke_task(:load_app)
 
+if ::Rails::VERSION::STRING < '4.1'
+  task :test => [:'app:db:test:prepare']
 
-namespace :app do
-  namespace :db do
-    task :load_config do
-      # set migrations paths to core only to have db:test:prepare work as desired
-      ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
-    end
-
-    namespace :test do
-      # for sqlite, make sure to delete the test.sqlite3 from the main application
-      task :purge do
-        abcs = ActiveRecord::Base.configurations
-        case abcs['test']['adapter']
-        when /sqlite/
-          dbfile = Rails.application.root.join(abcs['test']['database'])
-          File.delete(dbfile) if File.exist?(dbfile)
-        end
+  namespace :app do
+    namespace :db do
+      task :load_config do
+        # set migrations paths to core only to have db:test:prepare work as desired
+        ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
       end
 
-      # run wagon migrations and load seed data.
-      # append this to the regular app:db:test:prepare task.
-      task :prepare do
-        Rails.env = 'test'
-        dependencies = (wagon.all_dependencies + [wagon])
+      namespace :test do
+        # for sqlite, make sure to delete the test.sqlite3 from the main application
+        task :purge do
+          abcs = ActiveRecord::Base.configurations
+          case abcs['test']['adapter']
+          when /sqlite/
+            dbfile = Rails.application.root.join(abcs['test']['database'])
+            File.delete(dbfile) if File.exist?(dbfile)
+          end
+        end
 
-        # migrate
-        dependencies.each { |d| d.migrate }
-
-        # seed
-        SeedFu.quiet = true unless ENV['VERBOSE']
-        SeedFu.seed([ Rails.root.join('db/fixtures').to_s,
-                      Rails.root.join('db/fixtures/test').to_s ])
-        dependencies.each { |d| d.load_seed }
+        # run wagon migrations and load seed data.
+        # append this to the regular app:db:test:prepare task.
+        task :prepare do
+          Rails.env = 'test'
+          Wagons.current_wagon.prepare_test_db
+        end
       end
     end
   end

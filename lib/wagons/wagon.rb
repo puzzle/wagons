@@ -84,6 +84,20 @@ module Wagons
       end
     end
 
+    # Loads the migrations and seeds of this wagon and its dependencies.
+    def prepare_test_db
+      depts = all_dependencies + [self]
+
+      # migrate
+      depts.each { |d| d.migrate }
+
+      # seed
+      SeedFu.quiet = true unless ENV['VERBOSE']
+      SeedFu.seed([ Rails.root.join('db/fixtures').to_s,
+                    Rails.root.join('db/fixtures/test').to_s ])
+      depts.each { |d| d.load_seed }
+    end
+
     # The version requirement for the main application.
     def app_requirement
       self.class.app_requirement

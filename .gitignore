@@ -8,6 +8,6 @@ test/dummy/tmp/
 test/dummy/.sass-cache
 test/dummy/Gemfile.lock
 test/dummy/vendor/wagons/superliner/Gemfile.lock
-test/ci/rails3.gemfile.lock
+test/ci/*.gemfile.lock
 .rvmrc
 .ruby-version
