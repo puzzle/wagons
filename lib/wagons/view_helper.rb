@@ -26,14 +26,14 @@ module Wagons
 
     def find_extension_partials(key, folder = nil)
       folders = extension_folders.dup
-      folders << folder if folder
+      folders << folder.to_s if folder
 
       files = find_extension_files(key, folders).sort_by { |f| File.basename(f) }
       files_to_partial_names(files)
     end
 
     def find_extension_files(key, folders)
-      folder_pattern = glob_pattern(folders)
+      folder_pattern = glob_pattern(folders.uniq)
       formats = glob_pattern(lookup_context.formats)
       handlers = glob_pattern(lookup_context.handlers)
 
