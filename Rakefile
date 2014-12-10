@@ -54,4 +54,4 @@ task :set_rails_version do
   end
 end
 
-task default: :test
+task :default => :test

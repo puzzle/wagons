@@ -6,7 +6,7 @@ module Wagons
     # extension partials in.
     def render_extensions(key, options = {})
       extensions = find_extension_partials(key, options.delete(:folder)).map do |partial|
-        render options.merge(partial: partial)
+        render options.merge(:partial => partial)
       end
       safe_join(extensions)
     end

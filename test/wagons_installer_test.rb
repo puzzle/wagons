@@ -32,12 +32,12 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   end
 
   test 'check app dependency is fine if app is sufficient' do
-    installer.stubs(:wagon_class).with(@slave1).returns(stub(app_requirement: Gem::Requirement.new('1.0')))
+    installer.stubs(:wagon_class).with(@slave1).returns(stub(:app_requirement => Gem::Requirement.new('1.0')))
     assert_equal [], installer.check_app_requirement([@master2, @slave1])
   end
 
   test 'check app dependency fails if app is too old' do
-    installer.stubs(:wagon_class).with(@superliner2).returns(stub(app_requirement: Gem::Requirement.new('>= 2.0')))
+    installer.stubs(:wagon_class).with(@superliner2).returns(stub(:app_requirement => Gem::Requirement.new('>= 2.0')))
     msg = installer.check_app_requirement([@master2, @superliner2])
     assert_equal 1, msg.size
     assert_match /requires/, msg.first
@@ -133,7 +133,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   end
 
   test 'install fails when checks go wrong' do
-    installer.stubs(:wagon_class).with(@superliner2).returns(stub(app_requirement: Gem::Requirement.new('>= 2.0')))
+    installer.stubs(:wagon_class).with(@superliner2).returns(stub(:app_requirement => Gem::Requirement.new('>= 2.0')))
     installer.expects(:wagonfile_edit).never
     assert_match /requires/, installer.install(["#{app_name}_superliner"])
   end
@@ -187,7 +187,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     @installer.stubs(:installed).returns([@master1, @slave1])
     @installer.stubs(:wagonfile).returns(WAGONFILE)
     @installer.stubs(:remove_wagons).returns(nil)
-    @installer.stubs(:wagon_class).returns(stub(app_requirement: Gem::Requirement.new))
+    @installer.stubs(:wagon_class).returns(stub(:app_requirement => Gem::Requirement.new))
   end
 
   def stub_wagons
