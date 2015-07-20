@@ -46,7 +46,7 @@ module Wagons
       files.map do |f|
         m = f.match(/views.(.+?[\/\\])_(.+)\.\w+\.\w+$/)
         m[1] + m[2]
-      end
+      end.uniq
     end
 
     def glob_pattern(list)
