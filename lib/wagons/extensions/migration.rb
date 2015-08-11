@@ -18,22 +18,24 @@ module ActiveRecord
       private
 
       def load_wagon_schema!
-        config = Base.configurations['test']
+        Base.clear_all_connections!
+
         # Contrary to the original rails approach (#load_schema_if_pending!),
         # purge the database first to get rid of all wagon tables.
+        config = Base.configurations['test']
         Tasks::DatabaseTasks.purge(config)
 
         Base.establish_connection(config)
-        load_base_schema
+        load_app_schema(config)
 
         Wagons.current_wagon.prepare_test_db if Wagons.current_wagon
       end
 
-      def load_base_schema
-        if Tasks::DatabaseTasks.respond_to?(:load_schema_current)
-          Tasks::DatabaseTasks.load_schema_current
+      def load_app_schema(config)
+        if Tasks::DatabaseTasks.respond_to?(:load_schema_for)
+          Tasks::DatabaseTasks.load_schema_for(config)
         else
-          Tasks::DatabaseTask.load_schema
+          Tasks::DatabaseTasks.load_schema
         end
         check_pending!
       end
