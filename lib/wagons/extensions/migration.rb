@@ -24,10 +24,18 @@ module ActiveRecord
         Tasks::DatabaseTasks.purge(config)
 
         Base.establish_connection(config)
-        Tasks::DatabaseTasks.load_schema
-        check_pending!
+        load_base_schema
 
         Wagons.current_wagon.prepare_test_db if Wagons.current_wagon
+      end
+
+      def load_base_schema
+        if Tasks::DatabaseTasks.respond_to?(:load_schema_current)
+          Tasks::DatabaseTasks.load_schema_current
+        else
+          Tasks::DatabaseTask.load_schema
+        end
+        check_pending!
       end
 
       def app_needs_migration?
