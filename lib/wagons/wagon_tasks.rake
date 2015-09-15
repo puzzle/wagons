@@ -138,9 +138,10 @@ task :stats => ['wagon:statsetup', 'app:stats']
 
 namespace :wagon do
   task :statsetup do
+    load 'rails/tasks/statistics.rake' unless defined?(STATS_DIRECTORIES)
     require 'rails/code_statistics'
     STATS_DIRECTORIES.clear
-    STATS_DIRECTORIES += [
+    STATS_DIRECTORIES.concat([
         %w(Controllers app/controllers),
         %w(Helpers app/helpers),
         %w(Models app/models),
@@ -155,7 +156,8 @@ namespace :wagon do
         %w(Integration\ tests test/integration),
         %w(Functional\ tests\ (old) test/functional),
         %w(Unit\ tests\ (old) test/unit)
-      ].collect { |name, dir| [ name, "#{ENGINE_PATH}/#{dir}" ] }.select { |name, dir| File.directory?(dir) }
+      ].collect { |name, dir| [ name, "#{ENGINE_PATH}/#{dir}" ] }.
+        select { |name, dir| File.directory?(dir) })
   end
 end
 
