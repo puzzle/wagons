@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    wagons (0.4.7)
+    wagons (0.4.8)
       bundler (>= 1.1)
       rails (>= 3.2)
       seed-fu-ndo (>= 0.0.2)

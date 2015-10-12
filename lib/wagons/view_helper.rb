@@ -19,7 +19,7 @@ module Wagons
 
     # The folder of the current partial relative to app/views
     def current_template_folder
-      @virtual_path[/(.+)\/.*/, 1]
+      @virtual_path ? @virtual_path[/(.+)\/.*/, 1] : lookup_context.prefixes.first
     end
 
     private
