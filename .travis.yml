@@ -18,3 +18,7 @@ gemfile:
 matrix:
   exclude:
 
+script:
+  - echo $BUNDLE_PATH
+  - ls $BUNDLE_PATH
+  - bundle exec rake
