@@ -4,7 +4,7 @@ cache: bundler
 
 env:
   global:
-    - BUNDLE_PATH=vendor/bundle
+    - BUNDLE_PATH=~/vendor/bundle
 
 rvm:
   - 2.3.7
