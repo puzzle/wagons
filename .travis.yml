@@ -15,7 +15,7 @@ matrix:
   exclude:
 
 script:
-  - export BUNDLE_PATH=~/vendor/bundle
+  - export BUNDLE_PATH=$PWD/vendor/bundle
   - echo $BUNDLE_PATH
   - ls $BUNDLE_PATH
   - bundle exec rake
