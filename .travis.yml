@@ -2,10 +2,6 @@ language: ruby
 
 cache: bundler
 
-env:
-  global:
-    - BUNDLE_PATH=~/vendor/bundle
-
 rvm:
   - 2.3.7
   - 2.5.1
@@ -19,6 +15,7 @@ matrix:
   exclude:
 
 script:
+  - export BUNDLE_PATH=~/vendor/bundle
   - echo $BUNDLE_PATH
   - ls $BUNDLE_PATH
   - bundle exec rake
