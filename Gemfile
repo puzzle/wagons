@@ -1,4 +1,4 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
 # Declare your gem's dependencies in wagons.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -11,5 +11,6 @@ gemspec
 # your gem to rubygems.org.
 
 group :test do
-  gem 'mocha', :require => false
+  gem 'mocha', require: false
+  gem 'rails-controller-testing'
 end

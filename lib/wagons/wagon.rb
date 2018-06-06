@@ -59,12 +59,12 @@ module Wagons
 
     # Run the migrations.
     def migrate(version = nil)
-      ActiveRecord::Migrator.migrate(migrations_paths, version)
+      migrate_to(version)
     end
 
     # Revert the migrations.
     def revert
-      ActiveRecord::Migrator.migrate(migrations_paths, 0)
+      migrate_to(0)
     end
 
     # Load seed data in db/fixtures.
@@ -79,9 +79,7 @@ module Wagons
 
     # Hash of the seed models to their existing records.
     def existing_seeds
-      silence_stream(STDOUT) do
-        SeedFuNdo.existing_seeds seed_fixtures
-      end
+      SeedFuNdo.existing_seeds seed_fixtures
     end
 
     # Loads the migrations and seeds of this wagon and its dependencies.
@@ -126,6 +124,18 @@ module Wagons
     def seed_fixtures
       fixtures = root.join('db', 'fixtures')
       ENV['NO_ENV'] ? [fixtures] : [fixtures, File.join(fixtures, Rails.env)]
+    end
+
+    def migrate_to(version)
+      if defined?(ActiveRecord::MigrationContext)
+        migration_context.migrate(version)
+      else
+        ActiveRecord::Migrator.migrate(migrations_paths, version)
+      end
+    end
+
+    def migration_context
+      ActiveRecord::MigrationContext.new(migrations_paths)
     end
 
     module ClassMethods

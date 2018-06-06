@@ -40,7 +40,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     installer.stubs(:wagon_class).with(@superliner2).returns(stub(:app_requirement => Gem::Requirement.new('>= 2.0')))
     msg = installer.check_app_requirement([@master2, @superliner2])
     assert_equal 1, msg.size
-    assert_match /requires/, msg.first
+    assert_match(/requires/, msg.first)
   end
 
   test 'check dependencies is fine if all depts are installed at the same time' do
@@ -51,7 +51,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
 
   test 'check dependencies fails if dependency is missing' do
     installer.stubs(:installed).returns([])
-    assert_match /requires/, installer.check_dependencies([@slave1])
+    assert_match(/requires/, installer.check_dependencies([@slave1]))
   end
 
   test 'check uninstalled dependencies is fine if all depts are uninstalled at the same time' do
@@ -59,7 +59,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   end
 
   test 'check uninstalled dependencies fails if dependency remains' do
-    assert_match /requires/, installer.check_uninstalled_dependencies([@master1])
+    assert_match(/requires/, installer.check_uninstalled_dependencies([@master1]))
   end
 
   test 'exclude specs does not modify original collection' do
@@ -81,9 +81,9 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
   test 'wagonfile update updates version and add new entries' do
     installer.wagonfile_update([@master2, @slave1, @superliner2])
     content = File.read(WAGONFILE)
-    assert_match /^gem '#{app_name}_master', '2.0.0'$/, content
-    assert_match /^gem '#{app_name}_slave', '1.0.0'$/, content
-    assert_match /^gem '#{app_name}_superliner', '2.0.0'$/, content
+    assert_match(/^gem '#{app_name}_master', '2.0.0'$/, content)
+    assert_match(/^gem '#{app_name}_slave', '1.0.0'$/, content)
+    assert_match(/^gem '#{app_name}_superliner', '2.0.0'$/, content)
     assert_equal 3, content.each_line.count, content
   end
 
@@ -91,9 +91,9 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     installer.include_version_in_wagonfile = false
     installer.wagonfile_update([@master2, @slave1, @superliner2])
     content = File.read(WAGONFILE)
-    assert_match /^gem '#{app_name}_master'$/, content
-    assert_match /^gem '#{app_name}_slave'$/, content
-    assert_match /^gem '#{app_name}_superliner'$/, content
+    assert_match(/^gem '#{app_name}_master'$/, content)
+    assert_match(/^gem '#{app_name}_slave'$/, content)
+    assert_match(/^gem '#{app_name}_superliner'$/, content)
     assert_equal 3, content.each_line.count, content
   end
 
@@ -104,15 +104,15 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     end
     installer.wagonfile_update([@master2, @slave1])
     content = File.read(WAGONFILE)
-    assert_match /^gem '#{app_name}_master', '2.0.0'$/, content
-    assert_match /^gem '#{app_name}_slave', '1.0.0'$/, content
+    assert_match(/^gem '#{app_name}_master', '2.0.0'$/, content)
+    assert_match(/^gem '#{app_name}_slave', '1.0.0'$/, content)
     assert_equal 2, content.each_line.count, content
   end
 
   test 'wagonfile remove' do
     installer.wagonfile_remove([@slave1])
     content = File.read(WAGONFILE)
-    assert_match /^gem '#{app_name}_master', '1.0.0'$/, content
+    assert_match(/^gem '#{app_name}_master', '1.0.0'$/, content)
     assert_equal 1, content.each_line.count
   end
 
@@ -120,7 +120,7 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     installer.stubs(:setup_command).returns('echo $RAILS_ENV > env.tmp')
     assert_nil installer.install(["#{app_name}_master"])
     content = File.read(WAGONFILE)
-    assert_match /^gem '#{app_name}_master', '2.0.0'$/, content
+    assert_match(/^gem '#{app_name}_master', '2.0.0'$/, content)
     assert_equal 'test', File.read('env.tmp').strip
     File.delete('env.tmp')
   end
@@ -129,18 +129,18 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
     installer.stubs(:setup_command).returns("echo $RAILS_ENV; echo 'its a bug' >&2; exit 1")
     assert_equal 'its a bug', installer.install(["#{app_name}_master"]).strip
     content = File.read(WAGONFILE)
-    assert_match /^gem '#{app_name}_master', '1.0.0'$/, content
+    assert_match(/^gem '#{app_name}_master', '1.0.0'$/, content)
   end
 
   test 'install fails when checks go wrong' do
     installer.stubs(:wagon_class).with(@superliner2).returns(stub(:app_requirement => Gem::Requirement.new('>= 2.0')))
     installer.expects(:wagonfile_edit).never
-    assert_match /requires/, installer.install(["#{app_name}_superliner"])
+    assert_match(/requires/, installer.install(["#{app_name}_superliner"]))
   end
 
   test 'install fails when name is invalid' do
     installer.expects(:wagonfile_edit).never
-    assert_match /not found/, installer.install(["#{app_name}_fantasy"])
+    assert_match(/not found/, installer.install(["#{app_name}_fantasy"]))
   end
 
   test 'uninstall runs when checks are fine' do
@@ -152,12 +152,12 @@ class Wagons::InstallerTest < ActiveSupport::TestCase
 
   test 'uninstall fails when checks go wrong' do
     installer.expects(:wagonfile_edit).never
-    assert_match /requires/, installer.uninstall(["#{app_name}_master"])
+    assert_match(/requires/, installer.uninstall(["#{app_name}_master"]))
   end
 
   test 'uninstall fails when name is invalid' do
     installer.expects(:wagonfile_edit).never
-    assert_match /not found/, installer.uninstall(["#{app_name}_fantasy"])
+    assert_match(/not found/, installer.uninstall(["#{app_name}_fantasy"]))
   end
 
   test 'wagon class can load class from anywhere' do

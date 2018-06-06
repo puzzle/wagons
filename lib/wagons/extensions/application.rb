@@ -15,7 +15,8 @@ module Rails
         end
       end
     end
-    alias_method_chain :ordered_railties, :wagons
+    alias ordered_railties_without_wagons ordered_railties
+    alias ordered_railties ordered_railties_with_wagons
 
     private
 

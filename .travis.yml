@@ -1,13 +1,15 @@
 language: ruby
 
+cache: bundler
+
 rvm:
-  - 1.9.3
-  - 2.1.2
+  - 2.3.7
+  - 2.5.1
 
 gemfile:
   - Gemfile
-  - test/ci/rails32.gemfile
-  - test/ci/rails40.gemfile
+  - test/ci/rails50.gemfile
+  - test/ci/rails42.gemfile
 
 matrix:
   exclude:

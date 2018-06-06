@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'bundler', '>= 1.1'
 
-  s.add_dependency 'rails', '>= 3.2'
+  s.add_dependency 'rails', '>= 4.2'
 
-  s.add_dependency 'seed-fu-ndo', '>= 0.0.2'
+  s.add_dependency 'seed-fu-ndo', '>= 0.0.3'
 
-  s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'open4'
+  s.add_development_dependency 'sqlite3'
 end

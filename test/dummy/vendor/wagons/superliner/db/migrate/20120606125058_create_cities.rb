@@ -1,4 +1,5 @@
-class CreateCities < ActiveRecord::Migration
+superklass = Rails.version >= '5.0' ? ActiveRecord::Migration[4.2] : ActiveRecord::Migration
+class CreateCities < superklass
   def change
     create_table :cities do |t|
       t.string :name

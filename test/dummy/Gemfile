@@ -10,6 +10,9 @@ end
 
 group :test do
   gem 'mocha', :require => false
+  if ENV['RAILS_VERSION'].nil? || ENV['RAILS_VERSION'][/(\d+\.\d+\.\d+)/, 1] >= '5.0'
+    gem 'rails-controller-testing'
+  end
 end
 
 # Include the wagons you want attached in Wagonfile.

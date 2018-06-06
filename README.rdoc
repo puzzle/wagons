@@ -1,11 +1,13 @@
 = Here Be Wagons
 
-Wagons are extensions to your application train running on Rails. You can see them as plugins that 
-extend the behavior of your specific Rails application. This framework makes it easy to create and 
+{<img src="https://secure.travis-ci.org/codez/wagons.png" />}[http://travis-ci.org/codez/wagons]
+
+Wagons are extensions to your application train running on Rails. You can see them as plugins that
+extend the behavior of your specific Rails application. This framework makes it easy to create and
 manage them.
 
-First of all, wagons are basically {Rails Engines}[http://api.rubyonrails.org/classes/Rails/Engine.html], 
-so make sure you are familiar with them. Wagons provide a handful of additions so your wagon 
+First of all, wagons are basically {Rails Engines}[http://api.rubyonrails.org/classes/Rails/Engine.html],
+so make sure you are familiar with them. Wagons provide a handful of additions so your wagon
 engines actually know your application.
 
 Wagons differ from engines in a few points:
@@ -28,15 +30,15 @@ This creates the structure of your wagon in <tt>vendor/wagons/[name]</tt>. In th
 which defines the <tt>Rails::Engine</tt> and includes the +Wagon+ module. Here, you may also extend your application
 classes in a +config.to_prepare+ block.
 
-In order to load wagons with the application, an entry in the +Gemfile+ would be sufficient. 
+In order to load wagons with the application, an entry in the +Gemfile+ would be sufficient.
 To keep things flexible, wagons come with an additional file +Wagonfile+. Generate one for development purposes with:
 
   rake wagon:file
 
-This will include all wagons found in +vendor/wagons+ in development mode. 
+This will include all wagons found in +vendor/wagons+ in development mode.
 Do not check +Wagonfile+ into source control. In your deployments, you might want to have different entries in there.
 
-Once your wagon is ready to ship, a gem can be built with <tt>rake build</tt>. The name of a wagon gem must always start 
+Once your wagon is ready to ship, a gem can be built with <tt>rake build</tt>. The name of a wagon gem must always start
 with the application name, followed with an underscore and the actual name of the wagon. In production, you may
 simply install the wagon gem and explicitly add a declaration to your +Wagonfile+.
 
@@ -54,7 +56,7 @@ Ruby and Rails provide all the magic required to extend your application from wi
 
 To add new models, controllers or views, simply create them in the +app+ directory of your wagon, as you would in a regular engine.
 
-To extend existing models and controllers, you may create modules with the required functionality. 
+To extend existing models and controllers, you may create modules with the required functionality.
 Include them into your application classes in a +config.to_prepare+ block in <tt>lib/[wagon_name]/wagon.rb</tt>.
 
 To extend views, wagons provides a simple view helper that looks for partials in all view paths. Any template that
@@ -68,7 +70,7 @@ Any partials living in an equally named subfolder as the calling template and st
 == Wagon dependencies
 
 Wagons may depend on each other and/or have certain requirements on their load order. To make sure something
-is loaded before the current wagon, add a <tt>require '[app_name]_[other_wagon]'</tt> on top of the 
+is loaded before the current wagon, add a <tt>require '[app_name]_[other_wagon]'</tt> on top of the
 <tt>lib/[app_name]_[current_wagon].rb</tt> file. For development dependencies, there is an extra +require_optional+
 method that will not raise a +LoadError+ if the dependency is not found.
 
@@ -90,7 +92,7 @@ The syntax follows the Ruby gem version and requirements.
 Wagons integrates {Seed Fu}[https://github.com/mbleigh/seed-fu] for seed data. All seed data from the application
 is also available in wagon tests, as long as no fixture files overwrite the corresponding tables.
 
-Wagons may come with their own seed data as well. Simply put it into <tt>db/fixtures[/environment]</tt>. To allow for 
+Wagons may come with their own seed data as well. Simply put it into <tt>db/fixtures[/environment]</tt>. To allow for
 an automatic removal of wagons, {Seed Fu-ndo}[https://github.com/codez/seed-fu-ndo] is able to record
 seed file instructions and destroy all entries that exist in the database. Just make sure that you only use
 the +seed+ and +seed_once+ methods in these files, or the unseed may not work correctly.
@@ -102,24 +104,24 @@ There are a few other things that work differently with wagons:
 
 === Schema & Migrations
 
-Wagons are extensions to your application that may vary between various installations. Wagon tables are added 
-and removed as wagons are installed or uninstalled. After you have added a wagon's gem to your production 
-+Wagonfile+, run <tt>rake wagon:setup</tt> to run the migrations and load the seed data. Before you remove them 
+Wagons are extensions to your application that may vary between various installations. Wagon tables are added
+and removed as wagons are installed or uninstalled. After you have added a wagon's gem to your production
++Wagonfile+, run <tt>rake wagon:setup</tt> to run the migrations and load the seed data. Before you remove them
 from +Wagonfile+, run <tt>rake wagon:remove WAGON=to_remove</tt> to eliminate the artifacts from the database first.
 
-In this way, the +schema.rb+ file must only contain the tables of the application, not of all wagons. 
-When you have migrations for your main application and wagons loaded, the schema will not be dumped on 
+In this way, the +schema.rb+ file must only contain the tables of the application, not of all wagons.
+When you have migrations for your main application and wagons loaded, the schema will not be dumped on
 <tt>db:migrate</tt>. You need to either remove the wagons or reset the database before the schema may be dumped.
 This is (currently) the cost for having arbitrary pluggable application extensions.
 
 === Tests
 
 Wagons use your application for tests. This is also true for your application's test database. To get the
-correct setup, <tt>app:db:test:prepare</tt> is extended to run the migration of the current wagon and all its 
+correct setup, <tt>app:db:test:prepare</tt> is extended to run the migration of the current wagon and all its
 dependencies, as well as their seed data. Once the database is set up, single tests may be run with
 the usual <tt>ruby -I test test/my_test.rb</tt> command.
 
-The +test_helper.rb+ of the main application is included in all wagon tests. Any additions in 
+The +test_helper.rb+ of the main application is included in all wagon tests. Any additions in
 this file are available in wagon tests as well. The only thing wagons need to do is reseting the
 fixture path to the wagon's test fixtures.
 
@@ -136,12 +138,9 @@ the same as for the application. <tt>rake wagon:bundle:update</tt> is here to he
 We recommend to NOT check in the Wagon's <tt>Gemfile.lock</tt> file into source control.
 
 Unfortunately, adding wagon gems to the +Wagonfile+ in production also breaks with Bundler's approach
-of locking down application gems. Because of that, the <tt>--deployment</tt> option cannot be used 
+of locking down application gems. Because of that, the <tt>--deployment</tt> option cannot be used
 with wagons. If you install your gems from <tt>vendor/cache</tt> into <tt>vendor/bundle</tt> or so,
-you still get most of the benefits of using Bundler, including the guarantee for the very same gem 
+you still get most of the benefits of using Bundler, including the guarantee for the very same gem
 versions as used in development.
 
 Contributions to this or any other issues are very welcome.
-
-
-{<img src="https://secure.travis-ci.org/codez/wagons.png" />}[http://travis-ci.org/codez/wagons]
