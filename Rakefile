@@ -38,7 +38,7 @@ task :test => :set_rails_version do
 
   begin
     in_dummy 'rm -rf Gemfile.lock'
-    in_dummy 'rails g wagon test_wagon'
+    in_dummy 'bundle exec rails g wagon test_wagon'
     in_dummy 'bundle exec rake wagon:bundle:update'
     in_dummy "bundle exec rake db:migrate test  #{'-t' if Rake.application.options.trace}"
     in_dummy "bundle exec rake wagon:test  #{'-t' if Rake.application.options.trace}"
