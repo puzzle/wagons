@@ -1,6 +1,19 @@
 language: ruby
 
-cache: bundler
+env:
+  global:
+    # to be used for dummy and wagons
+    - ROOT_BUNDLE_PATH=$PWD/vendor/bundle
+
+cache:
+  # cache directory manually instead of bundle to make sure
+  # that the $ROOT_BUNDLE_PATH is used correctly.
+  directories:
+    - $ROOT_BUNDLE_PATH
+
+before_cache: bundle clean
+
+bundler_args: --jobs=3 --retry=3 --path=$ROOT_BUNDLE_PATH
 
 rvm:
   - 2.3.7
@@ -13,9 +26,3 @@ gemfile:
 
 matrix:
   exclude:
-
-script:
-  - export BUNDLE_PATH=$PWD/vendor/bundle
-  - echo $BUNDLE_PATH
-  - ls $BUNDLE_PATH
-  - bundle exec rake
