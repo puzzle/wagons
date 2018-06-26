@@ -8,4 +8,5 @@ gem 'seed-fu-ndo', '>= 0.0.2'
 
 group :test do
   gem 'mocha', :require => false
+  gem 'rails-controller-testing'
 end
