@@ -47,6 +47,7 @@ task :test => :set_rails_version do
       in_dummy 'mkdir -p vendor/wagons/superliner/.bundle'
       in_dummy 'echo -e "---\nBUNDLE_PATH: \"$ROOT_BUNDLE_PATH\"\n" > vendor/wagons/superliner/.bundle/config'
     end
+    in_dummy 'bundle'
     in_dummy 'bundle exec rails g wagon test_wagon'
     in_dummy 'bundle exec rake wagon:bundle:update'
     in_dummy "bundle exec rake db:migrate test  #{'-t' if Rake.application.options.trace}"

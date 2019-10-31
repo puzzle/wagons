@@ -109,10 +109,6 @@ module Wagons
     # Loads tasks into the main Rails application.
     # Overwritten to only load own rake tasks, without install:migrations task from Rails::Engine
     def load_tasks(app = self)
-      if Rails::VERSION::MAJOR < 4
-        railties.all { |r| r.load_tasks(app) }
-      end
-
       extend Rake::DSL if defined? Rake::DSL
       self.class.rake_tasks.each { |block| instance_exec(app, &block) }
       paths['lib/tasks'].existent.sort.each { |ext| load(ext) }
@@ -127,15 +123,15 @@ module Wagons
     end
 
     def migrate_to(version)
-      if defined?(ActiveRecord::MigrationContext)
-        migration_context.migrate(version)
-      else
-        ActiveRecord::Migrator.migrate(migrations_paths, version)
-      end
+      migration_context.migrate(version)
     end
 
     def migration_context
-      ActiveRecord::MigrationContext.new(migrations_paths)
+      if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
+        ActiveRecord::MigrationContext.new(migrations_paths)
+      else
+        ActiveRecord::MigrationContext.new(migrations_paths, ActiveRecord::SchemaMigration)
+      end
     end
 
     module ClassMethods

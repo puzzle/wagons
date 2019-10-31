@@ -1,5 +1,4 @@
-superklass = Rails.version >= '5.0' ? ActiveRecord::Migration[4.2] : ActiveRecord::Migration
-class CreatePeople < superklass
+class CreatePeople < ActiveRecord::Migration[5.2]
   def change
     create_table :people do |t|
       t.string :name

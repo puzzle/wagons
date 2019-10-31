@@ -9,9 +9,7 @@ require 'wagons/version'
 require 'wagons/extensions/application'
 require 'wagons/extensions/require_optional'
 require 'wagons/extensions/test_case'
-if ::Rails::VERSION::STRING >= '4.1'
-  require 'wagons/extensions/migration'
-end
+require 'wagons/extensions/migration'
 
 # Utility class to find single wagons and provide additional information
 # about the main application.

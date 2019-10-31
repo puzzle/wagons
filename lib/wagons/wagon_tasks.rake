@@ -100,38 +100,6 @@ end
 
 Rake.application.invoke_task(:load_app)
 
-if ::Rails::VERSION::STRING < '4.1'
-  task :test => [:'app:db:test:prepare']
-
-  namespace :app do
-    namespace :db do
-      task :load_config do
-        # set migrations paths to core only to have db:test:prepare work as desired
-        ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
-      end
-
-      namespace :test do
-        # for sqlite, make sure to delete the test.sqlite3 from the main application
-        task :purge do
-          abcs = ActiveRecord::Base.configurations
-          case abcs['test']['adapter']
-          when /sqlite/
-            dbfile = Rails.application.root.join(abcs['test']['database'])
-            File.delete(dbfile) if File.exist?(dbfile)
-          end
-        end
-
-        # run wagon migrations and load seed data.
-        # append this to the regular app:db:test:prepare task.
-        task :prepare do
-          Rails.env = 'test'
-          Wagons.current_wagon.prepare_test_db
-        end
-      end
-    end
-  end
-end
-
 task :notes => 'app:notes'
 
 task :stats => ['wagon:statsetup', 'app:stats']

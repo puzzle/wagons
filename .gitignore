@@ -11,3 +11,4 @@ test/dummy/vendor/wagons/superliner/Gemfile.lock
 test/ci/*.gemfile.lock
 .rvmrc
 .ruby-version
+.byebug_history

@@ -180,17 +180,14 @@ namespace :db do
     Rake::Task[:'db:_dump'].clear_actions
 
     task :_dump do
-      wagon_migrations =
-        if defined?(ActiveRecord::MigrationContext)
-          context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
-          migrated = Set.new(context.get_all_versions)
-          migrated.size > context.migrations.size
+      context =
+        if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
+          ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
         else
-          migrations = ActiveRecord::Migrator.migrations(ActiveRecord::Migrator.migrations_paths)
-          migrated = Set.new(ActiveRecord::Migrator.get_all_versions)
-          migrated.size > migrations.size
+          ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration)
         end
-      if wagon_migrations
+      migrated = Set.new(context.get_all_versions)
+      if migrated.size > context.migrations.size
         puts "The database schema will not be dumped when there are loaded wagon migrations."
         puts "To dump the application schema, please 'rake wagon:remove WAGON=ALL' wagons beforehand or reset the database."
       else

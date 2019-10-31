@@ -33,11 +33,7 @@ module ActiveRecord
       end
 
       def load_app_schema(config)
-        if Tasks::DatabaseTasks.respond_to?(:load_schema_for)
-          Tasks::DatabaseTasks.load_schema_for(config)
-        else
-          Tasks::DatabaseTasks.load_schema(config)
-        end
+        Tasks::DatabaseTasks.load_schema(config)
         check_pending!
       end
 
@@ -47,27 +43,23 @@ module ActiveRecord
       end
 
       def defined_app_migration_versions
-        if defined?(MigrationContext)
-          migration_context.migrations.collect(&:version).to_set
-        else
-          Migrator.migrations(Migrator.migrations_paths).collect(&:version).to_set
-        end
+        migration_context.migrations.collect(&:version).to_set
       end
 
       def migration_versions_in_db
         if Base.connection.table_exists?(SchemaMigration.table_name)
-          if defined?(MigrationContext)
-            migration_context.get_all_versions.to_set
-          else
-            Migrator.get_all_versions.to_set
-          end
+          migration_context.get_all_versions.to_set
         else
           [].to_set
         end
       end
 
       def migration_context
-        MigrationContext.new(Migrator.migrations_paths)
+        if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
+          MigrationContext.new(Migrator.migrations_paths)
+        else
+          MigrationContext.new(Migrator.migrations_paths, SchemaMigration)
+        end
       end
 
     end
