@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    wagons (0.6.0)
+    wagons (0.6.1)
       bundler (>= 1.1)
       rails (>= 4.2)
       seed-fu-ndo (>= 0.0.3)
@@ -81,7 +81,7 @@ GEM
       mimemagic (~> 0.3.2)
     metaclass (0.0.4)
     method_source (0.9.2)
-    mimemagic (0.3.3)
+    mimemagic (0.3.4)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.12.2)
@@ -124,7 +124,7 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (>= 0.20.3, < 2.0)
-    rake (13.0.0)
+    rake (13.0.1)
     seed-fu (2.3.9)
       activerecord (>= 3.1)
       activesupport (>= 3.1)
@@ -138,7 +138,7 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.1)
-    thor (0.20.3)
+    thor (1.0.1)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
