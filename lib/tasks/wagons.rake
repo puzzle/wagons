@@ -141,8 +141,16 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
 
   # desc "Raises an error if there are pending wagon migrations"
   task :abort_if_pending_migrations => :environment do
-    files = ActiveRecord::Migrator.migrations(wagons.collect(&:migrations_paths).flatten)
-    pending_migrations = ActiveRecord::Migrator.new(:up, files).pending_migrations
+    paths = wagons.collect(&:migrations_paths).flatten
+
+    pending_migrations =
+      if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
+        context = ActiveRecord::MigrationContext.new(paths)
+        ActiveRecord::Migrator.new(:up, context.migrations).pending_migrations
+      else
+        context = ActiveRecord::MigrationContext.new(paths, ActiveRecord::SchemaMigration)
+        ActiveRecord::Migrator.new(:up, context.migrations, ActiveRecord::SchemaMigration).pending_migrations
+      end
 
     if pending_migrations.any?
       puts "You have #{pending_migrations.size} pending migrations:"
