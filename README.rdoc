@@ -1,6 +1,7 @@
 = Here Be Wagons
 
-{<img src="https://secure.travis-ci.org/codez/wagons.png" />}[http://travis-ci.org/codez/wagons]
+{<img src="https://github.com/codez/wagons/actions/workflows/build.yml/badge.svg" />}[https://github.com/codez/wagons/actions/workflows/build.yml]
+{<img src="https://api.codeclimate.com/v1/badges/32a0d860544681cf718c/maintainability" />}[https://codeclimate.com/github/codez/wagons/maintainability]
 
 Wagons are extensions to your application train running on Rails. You can see them as plugins that
 extend the behavior of your specific Rails application. This framework makes it easy to create and

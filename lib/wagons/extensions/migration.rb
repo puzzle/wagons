@@ -23,7 +23,12 @@ module ActiveRecord
 
         # Contrary to the original rails approach (#load_schema_if_pending!),
         # purge the database first to get rid of all wagon tables.
-        config = Base.configurations['test']
+        config =
+          if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.1.0')
+            Base.configurations['test']
+          else
+            Base.configurations.configs_for(env_name: 'test').first
+          end
         Tasks::DatabaseTasks.purge(config)
 
         Base.establish_connection(config)
