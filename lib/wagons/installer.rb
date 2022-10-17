@@ -256,7 +256,7 @@ module Wagons
       cmd = setup_command(specs)
       Rails.logger.info(cmd)
 
-      Bundler.with_clean_env do
+      Bundler.with_unbundled_env do
         ENV['RAILS_ENV'] = env
         execute_setup(cmd)
       end

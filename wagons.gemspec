@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'bundler', '>= 1.1'
 
-  s.add_dependency 'rails', '>= 4.2'
+  s.add_dependency 'rails', '>= 5.2'
 
   s.add_dependency 'seed-fu-ndo', '>= 0.0.3'
 

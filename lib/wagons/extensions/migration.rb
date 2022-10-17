@@ -5,12 +5,12 @@ module ActiveRecord
       # Extend maintain_test_schema! to include migrations of the current wagon to test
       # or to make sure no wagon migrations are loaded when testing the main application.
       def maintain_test_schema_with_wagons!
-        if Base.maintain_test_schema
-          # set migrations paths to core only, wagon migrations are loaded separately
-          Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
-          if app_needs_migration?
-            suppress_messages { load_wagon_schema! }
-          end
+        return unless maintain_test_schema?
+
+        # set migrations paths to core only, wagon migrations are loaded separately
+        Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
+        if app_needs_migration?
+          suppress_messages { load_wagon_schema! }
         end
       end
       alias maintain_test_schema_without_wagons! maintain_test_schema!
@@ -64,6 +64,14 @@ module ActiveRecord
           MigrationContext.new(Migrator.migrations_paths)
         else
           MigrationContext.new(Migrator.migrations_paths, SchemaMigration)
+        end
+      end
+
+      def maintain_test_schema?
+        if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('7.0.0')
+          ActiveRecord::Base.maintain_test_schema
+        else
+          ActiveRecord.maintain_test_schema
         end
       end
 
