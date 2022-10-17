@@ -123,7 +123,7 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
       puts "\n*** #{w.wagon_name.upcase} ***" if wagons.size > 1
       rel_dir = w.root.to_s.sub(Rails.root.to_s + File::SEPARATOR, '')
       cmd = "cd #{rel_dir} && #{ENV['CMD']}"
-      Bundler.with_clean_env do
+      Bundler.with_unbundled_env do
         verbose(Rake.application.options.trace) { sh cmd }
       end
     end

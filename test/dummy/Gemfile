@@ -5,6 +5,7 @@ gem 'rails', ENV['RAILS_VERSION']
 gem 'wagons', :path => File.expand_path(__FILE__).split("test#{File::SEPARATOR}dummy").first
 
 group :development, :test do
+  gem 'net-smtp'
   gem 'sqlite3'
 end
 
