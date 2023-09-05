@@ -23,12 +23,7 @@ module ActiveRecord
 
         # Contrary to the original rails approach (#load_schema_if_pending!),
         # purge the database first to get rid of all wagon tables.
-        config =
-          if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.1.0')
-            Base.configurations['test']
-          else
-            Base.configurations.configs_for(env_name: 'test').first
-          end
+        config = Base.configurations.configs_for(env_name: 'test').first
         Tasks::DatabaseTasks.purge(config)
 
         Base.establish_connection(config)
@@ -60,11 +55,7 @@ module ActiveRecord
       end
 
       def migration_context
-        if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
-          MigrationContext.new(Migrator.migrations_paths)
-        else
-          MigrationContext.new(Migrator.migrations_paths, SchemaMigration)
-        end
+        MigrationContext.new(Migrator.migrations_paths, SchemaMigration)
       end
 
       def maintain_test_schema?

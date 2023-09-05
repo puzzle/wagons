@@ -11,20 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ["2.7", "3.0", "3.1"]
+        ruby-version: ["3.0", "3.1", "3.2"]
         gemfile:
           - Gemfile
-          - test/ci/rails52.gemfile
-          - test/ci/rails60.gemfile
           - test/ci/rails61.gemfile
-        exclude:
-          - ruby-version: "3.0"
-            gemfile: test/ci/rails52.gemfile
-          - ruby-version: "3.1"
-            gemfile: test/ci/rails52.gemfile
-          # YAML loading issue only fixed in 6.1
-          - ruby-version: "3.1"
-            gemfile: test/ci/rails60.gemfile
     env:
       ROOT_BUNDLE_PATH: ${{ github.workspace }}/vendor/bundle
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}

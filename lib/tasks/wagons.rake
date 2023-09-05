@@ -143,14 +143,12 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
   task :abort_if_pending_migrations => :environment do
     paths = wagons.collect(&:migrations_paths).flatten
 
-    pending_migrations =
-      if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
-        context = ActiveRecord::MigrationContext.new(paths)
-        ActiveRecord::Migrator.new(:up, context.migrations).pending_migrations
-      else
-        context = ActiveRecord::MigrationContext.new(paths, ActiveRecord::SchemaMigration)
-        ActiveRecord::Migrator.new(:up, context.migrations, ActiveRecord::SchemaMigration).pending_migrations
-      end
+    context = ActiveRecord::MigrationContext.new(paths, ActiveRecord::SchemaMigration)
+    pending_migrations = ActiveRecord::Migrator.new(
+      :up,
+      context.migrations,
+      ActiveRecord::SchemaMigration
+    ).pending_migrations
 
     if pending_migrations.any?
       puts "You have #{pending_migrations.size} pending migrations:"
@@ -188,12 +186,7 @@ namespace :db do
     Rake::Task[:'db:_dump'].clear_actions
 
     task :_dump do
-      context =
-        if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
-          ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
-        else
-          ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration)
-        end
+      context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration)
       migrated = Set.new(context.get_all_versions)
       if migrated.size > context.migrations.size
         puts "The database schema will not be dumped when there are loaded wagon migrations."
