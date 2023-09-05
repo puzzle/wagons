@@ -127,11 +127,7 @@ module Wagons
     end
 
     def migration_context
-      if Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('6.0.0')
-        ActiveRecord::MigrationContext.new(migrations_paths)
-      else
-        ActiveRecord::MigrationContext.new(migrations_paths, ActiveRecord::SchemaMigration)
-      end
+      ActiveRecord::MigrationContext.new(migrations_paths, ActiveRecord::SchemaMigration)
     end
 
     module ClassMethods
