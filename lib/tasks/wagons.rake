@@ -199,11 +199,15 @@ namespace :db do
     end
 
     task :_dump_rails do
-      case ActiveRecord::Base.schema_format
+      schema_format =
+        Gem::Version.new(Rails::VERSION::STRING) < Gem::Version.new('7.1.0') ?
+        ActiveRecord::Base.schema_format : ActiveRecord.schema_format
+
+      case schema_format
       when :ruby then Rake::Task["db:schema:dump"].invoke
       when :sql  then Rake::Task["db:structure:dump"].invoke
       else
-        raise "unknown schema format #{ActiveRecord::Base.schema_format}"
+        raise "unknown schema format #{schema_format}"
       end
       Rake::Task[:'db:_dump_rails'].reenable
     end

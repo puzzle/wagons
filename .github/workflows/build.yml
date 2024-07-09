@@ -15,11 +15,12 @@ jobs:
         gemfile:
           - Gemfile
           - test/ci/rails61.gemfile
+          - test/ci/rails70.gemfile
     env:
       ROOT_BUNDLE_PATH: ${{ github.workspace }}/vendor/bundle
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
