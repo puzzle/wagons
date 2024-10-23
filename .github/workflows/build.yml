@@ -16,6 +16,7 @@ jobs:
           - Gemfile
           - test/ci/rails61.gemfile
           - test/ci/rails70.gemfile
+          - test/ci/rails71.gemfile
     env:
       ROOT_BUNDLE_PATH: ${{ github.workspace }}/vendor/bundle
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
