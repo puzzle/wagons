@@ -14,3 +14,4 @@ test/ci/*.gemfile.lock
 .rvmrc
 .ruby-version
 .byebug_history
+.idea

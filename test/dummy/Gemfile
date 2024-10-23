@@ -6,12 +6,12 @@ gem 'wagons', :path => File.expand_path(__FILE__).split("test#{File::SEPARATOR}d
 
 group :development, :test do
   gem 'net-smtp'
-  gem 'sqlite3', '~> 1.4'
 end
 
 group :test do
   gem 'mocha', :require => false
   gem 'rails-controller-testing'
+  gem 'sqlite3', '~> 2.1'
 end
 
 # Include the wagons you want attached in Wagonfile.

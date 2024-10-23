@@ -13,18 +13,14 @@ module ActiveRecord
           suppress_messages { load_wagon_schema! }
         end
       end
+
       alias maintain_test_schema_without_wagons! maintain_test_schema!
       alias maintain_test_schema! maintain_test_schema_with_wagons!
 
       private
 
       def load_wagon_schema!
-        if rails_version_smaller_than('7.1.0')
-          Base.clear_all_connections!
-        else
-          Base.connection_handler.clear_all_connections!
-        end
-
+        Base.connection_handler.clear_all_connections!
         # Contrary to the original rails approach (#load_schema_if_pending!),
         # purge the database first to get rid of all wagon tables.
         config = Base.configurations.configs_for(env_name: 'test').first
@@ -38,11 +34,7 @@ module ActiveRecord
 
       def load_app_schema(config)
         Tasks::DatabaseTasks.load_schema(config)
-        if rails_version_smaller_than('7.1.0')
-          check_pending!
-        else
-          check_all_pending!
-        end
+        check_all_pending!
       end
 
       def app_needs_migration?
@@ -63,27 +55,15 @@ module ActiveRecord
       end
 
       def schema_migration_table_exists?
-        if rails_version_smaller_than('7.1.0')
-          Base.connection.table_exists?(SchemaMigration.table_name)
-        else
-          SchemaMigration.new(Base.connection).table_exists?
-        end
+        ActiveRecord::Base.connection.data_source_exists?(ActiveRecord::Base.schema_migrations_table_name)
       end
 
       def migration_context
-        if rails_version_smaller_than('7.1.0')
-          MigrationContext.new(Migrator.migrations_paths, SchemaMigration)
-        else
-          MigrationContext.new(Migrator.migrations_paths)
-        end
+        MigrationContext.new(Migrator.migrations_paths)
       end
 
       def maintain_test_schema?
-        if rails_version_smaller_than('7.0.0')
-          ActiveRecord::Base.maintain_test_schema
-        else
-          ActiveRecord.maintain_test_schema
-        end
+        ActiveRecord.maintain_test_schema
       end
 
       def rails_version_smaller_than(version)
