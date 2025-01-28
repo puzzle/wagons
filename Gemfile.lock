@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    wagons (0.8.0)
+    wagons (0.9.0)
       bundler (>= 2.0)
-      rails (>= 6.1)
+      rails (>= 7.1)
       seed-fu-ndo (>= 0.0.3)
 
 GEM
