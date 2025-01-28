@@ -11,11 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ["3.0", "3.1", "3.2"]
+        ruby-version: ["3.1", "3.2", "3.3", "3.4"]
         gemfile:
           - Gemfile
-          - test/ci/rails61.gemfile
-          - test/ci/rails70.gemfile
+          - test/ci/rails72.gemfile
+          - test/ci/rails71.gemfile
+        exclude:
+          # Exclude Ruby 3.1 since it isn't supported with rails 8.0.0
+          - ruby-version: "3.1"
+            gemfile: Gemfile
+          # Exclude Ruby 3.1 since it isn't supported with rails 7.2.0
+          - ruby-version: "3.1"
+            gemfile: test/ci/rails72.gemfile
+
     env:
       ROOT_BUNDLE_PATH: ${{ github.workspace }}/vendor/bundle
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}

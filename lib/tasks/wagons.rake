@@ -147,7 +147,8 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
     pending_migrations = ActiveRecord::Migrator.new(
       :up,
       context.migrations,
-      ActiveRecord::SchemaMigration
+      ActiveRecord::SchemaMigration,
+      InternalMetadata.new(ActiveRecord::Tasks::DatabaseTasks.migration_connection_pool)
     ).pending_migrations
 
     if pending_migrations.any?
@@ -186,7 +187,7 @@ namespace :db do
     Rake::Task[:'db:_dump'].clear_actions
 
     task :_dump do
-      context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration)
+      context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
       migrated = Set.new(context.get_all_versions)
       if migrated.size > context.migrations.size
         puts "The database schema will not be dumped when there are loaded wagon migrations."
