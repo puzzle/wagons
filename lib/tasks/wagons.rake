@@ -143,12 +143,12 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
   task :abort_if_pending_migrations => :environment do
     paths = wagons.collect(&:migrations_paths).flatten
 
-    context = ActiveRecord::MigrationContext.new(paths, ActiveRecord::SchemaMigration)
+    context = ActiveRecord::MigrationContext.new(paths)
     pending_migrations = ActiveRecord::Migrator.new(
       :up,
       context.migrations,
-      ActiveRecord::SchemaMigration,
-      InternalMetadata.new(ActiveRecord::Tasks::DatabaseTasks.migration_connection_pool)
+      context.schema_migration,
+      context.internal_metadata
     ).pending_migrations
 
     if pending_migrations.any?
