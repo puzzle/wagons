@@ -192,6 +192,16 @@ namespace :db do
       if migrated.size > context.migrations.size
         puts "The database schema will not be dumped when there are loaded wagon migrations."
         puts "To dump the application schema, please 'rake wagon:remove WAGON=ALL' wagons beforehand or reset the database."
+
+        schema = Rails.root.join("db/schema.rb")
+        tmp_schema = Rails.root.join("tmp/schema.rb")
+        wagon_schema = Wagons.all.first.root.join("db/schema.rb")
+        wagon_schema_diff = Wagons.all.first.root.join("db/schema.diff")
+        FileUtils.mv(schema, tmp_schema)
+        Rake::Task[:"db:_dump_rails"].invoke
+        FileUtils.mv(schema, wagon_schema)
+        FileUtils.mv(tmp_schema, schema)
+        `diff -W 300 -y #{schema} #{wagon_schema} > #{wagon_schema_diff}`
       else
         Rake::Task[:'db:_dump_rails'].invoke
       end
