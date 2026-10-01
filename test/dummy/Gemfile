@@ -9,6 +9,8 @@ group :development, :test do
 end
 
 group :test do
+  # minitest 6 breaks railties' line filtering before 8.0.5/8.1.2
+  gem 'minitest', '< 6' if ENV['RAILS_VERSION'].to_s.match?(/\A\D*7\./)
   gem 'mocha', :require => false
   gem 'rails-controller-testing'
   gem 'sqlite3', '~> 2.1'
