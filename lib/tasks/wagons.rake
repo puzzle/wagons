@@ -1,6 +1,6 @@
 # The tasks available to the base application using wagons.
 
-namespace :wagon do
+wagon_namespace = namespace :wagon do
   desc "Run wagon migrations (options: VERSION=x, WAGON=abc, VERBOSE=false)"
   task :migrate => [:environment, :'db:load_config'] do
     ActiveRecord::Migration.verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
@@ -39,8 +39,8 @@ namespace :wagon do
       if messages.present?
         fail messages.join("\n")
       else
-        Rake::Task['wagon:unseed'].invoke
-        Rake::Task['wagon:revert'].invoke
+        wagon_namespace[:unseed].invoke
+        wagon_namespace[:revert].invoke
       end
     end
   end
@@ -114,27 +114,26 @@ eval(File.read(wagonfile)) if File.exist?(wagonfile)"
   desc "Run the tests of WAGON"
   task :test do
     ENV['CMD'] = "bundle exec rake #{'-t' if Rake.application.options.trace}"
-    Rake::Task['wagon:exec'].invoke
+    wagon_namespace[:exec].invoke
   end
 
   desc "Execute CMD in WAGON's base directory"
   task :exec do
     wagons.each do |w|
       puts "\n*** #{w.wagon_name.upcase} ***" if wagons.size > 1
-      rel_dir = w.root.to_s.sub(Rails.root.to_s + File::SEPARATOR, '')
-      cmd = "cd #{rel_dir} && #{ENV['CMD']}"
+      cmd = "cd #{w.root} && #{ENV['CMD']}"
       Bundler.with_unbundled_env do
         verbose(Rake.application.options.trace) { sh cmd }
       end
     end
-    Rake::Task['wagon:exec'].reenable
+    wagon_namespace[:exec].reenable
   end
 
   namespace :bundle do
     desc "Run bundle update for all WAGONs"
     task :update do
       ENV['CMD'] = "bundle update --local"
-      Rake::Task['wagon:exec'].invoke
+      wagon_namespace[:exec].invoke
     end
   end
 
@@ -167,7 +166,7 @@ namespace :test do
 end
 
 
-namespace :db do
+db_namespace = namespace :db do
     namespace :seed do
       desc "Load core and wagon seeds into the current environment's database."
       task :all => ['db:seed', 'wagon:seed']
@@ -193,10 +192,10 @@ namespace :db do
         puts "The database schema will not be dumped when there are loaded wagon migrations."
         puts "To dump the application schema, please 'rake wagon:remove WAGON=ALL' wagons beforehand or reset the database."
       else
-        Rake::Task[:'db:_dump_rails'].invoke
+        db_namespace[:_dump_rails].invoke
       end
 
-      Rake::Task[:'db:_dump'].reenable
+      db_namespace[:_dump].reenable
     end
 
     task :_dump_rails do
@@ -205,12 +204,12 @@ namespace :db do
         ActiveRecord::Base.schema_format : ActiveRecord.schema_format
 
       case schema_format
-      when :ruby then Rake::Task["db:schema:dump"].invoke
-      when :sql  then Rake::Task["db:structure:dump"].invoke
+      when :ruby then db_namespace["schema:dump"].invoke
+      when :sql  then db_namespace["structure:dump"].invoke
       else
         raise "unknown schema format #{schema_format}"
       end
-      Rake::Task[:'db:_dump_rails'].reenable
+      db_namespace[:_dump_rails].reenable
     end
 end
 
@@ -222,4 +221,3 @@ def wagons
   puts "Please specify at least one valid WAGON" if ENV['WAGON'].present? && wagons.blank?
   wagons
 end
-
