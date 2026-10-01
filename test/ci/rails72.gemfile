@@ -5,6 +5,7 @@ gemspec :path => '../..'
 gem 'rails', '~> 7.2.0'
 
 group :test do
+  gem 'minitest', '< 6' # minitest 6 breaks railties' line filtering before 8.0.5/8.1.2
   gem 'mocha', :require => false
   gem 'net-smtp'
   gem 'rails-controller-testing'
