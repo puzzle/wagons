@@ -45,12 +45,12 @@ task :bundle => :set_rails_version do
   in_dummy 'rm -rf Gemfile.lock'
   if ENV['ROOT_BUNDLE_PATH'] # used by ci
     in_dummy 'mkdir -p .bundle'
-    in_dummy 'echo "---\nBUNDLE_PATH: \"$ROOT_BUNDLE_PATH\"\n" > .bundle/config'
+    in_dummy 'echo "---\nBUNDLE_PATH: \"${ROOT_BUNDLE_PATH}-dummy\"\n" > .bundle/config'
     in_dummy 'cat .bundle/config'
     in_dummy 'mkdir -p vendor/wagons/test_wagon/.bundle'
-    in_dummy 'echo -e "---\nBUNDLE_PATH: \"$ROOT_BUNDLE_PATH\"\n" > vendor/wagons/test_wagon/.bundle/config'
+    in_dummy 'echo -e "---\nBUNDLE_PATH: \"${ROOT_BUNDLE_PATH}-dummy\"\n" > vendor/wagons/test_wagon/.bundle/config'
     in_dummy 'mkdir -p vendor/wagons/superliner/.bundle'
-    in_dummy 'echo -e "---\nBUNDLE_PATH: \"$ROOT_BUNDLE_PATH\"\n" > vendor/wagons/superliner/.bundle/config'
+    in_dummy 'echo -e "---\nBUNDLE_PATH: \"${ROOT_BUNDLE_PATH}-dummy\"\n" > vendor/wagons/superliner/.bundle/config'
   end
   in_dummy 'bundle'
 end
