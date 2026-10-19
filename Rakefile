@@ -62,6 +62,40 @@ task :set_rails_version do
   end
 end
 
+namespace :test do
+  desc 'Run the tests with the CI matrix (via mise), ' \
+       'optionally filtered: test:matrix[ruby,gemfile]'
+  task :matrix, [:ruby, :gemfile] do |_task, args|
+    require 'yaml'
+    matrix = YAML.load_file('.github/workflows/build.yml')
+                 .dig('jobs', 'test', 'strategy', 'matrix')
+    excludes = matrix.fetch('exclude', []).map { |e| e.values_at('ruby-version', 'gemfile') }
+    all = matrix['ruby-version'].product(matrix['gemfile']) - excludes
+
+    combos = all
+    combos = combos.select { |r, _| r.include?(args[:ruby]) } unless args[:ruby].to_s.empty?
+    combos = combos.select { |_, g| g.include?(args[:gemfile]) } unless args[:gemfile].to_s.empty?
+    if combos.empty?
+      abort "No matrix combination matches " \
+            "ruby=#{args[:ruby].inspect}, gemfile=#{args[:gemfile].inspect}\n" \
+            "Valid combinations:\n" +
+            all.map { |r, g| "  [#{r},#{g}]" }.join("\n")
+    end
+
+    failures = combos.select do |ruby, gemfile|
+      puts "\n#{'=' * 72}\nruby #{ruby} / #{gemfile}\n#{'=' * 72}"
+      !Bundler.with_unbundled_env do
+        system({ 'BUNDLE_GEMFILE' => gemfile },
+               "mise exec ruby@#{ruby} -- sh -c 'bundle install --quiet && bundle exec rake'")
+      end
+    end
+
+    if failures.any?
+      abort "\nMatrix failed:\n" + failures.map { |r, g| "  ruby #{r} / #{g}" }.join("\n")
+    end
+  end
+end
+
 task :default => :test
 
 def in_dummy(command)
