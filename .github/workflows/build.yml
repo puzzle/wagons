@@ -10,6 +10,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         ruby-version: ["3.2", "3.3", "3.4"]
         gemfile:
@@ -29,3 +30,15 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run tests
         run: bundle exec rake
+
+  all-tests-green:
+    name: All tests green
+    runs-on: ubuntu-latest
+    needs: test
+    # Runs even on matrix failure: a skipped job would report as successful to
+    # branch protection, turning a failing run into a mergeable pull request.
+    if: ${{ !cancelled() }}
+    steps:
+      - run: |
+          echo "tests: ${{ needs.test.result }}"
+          [ "${{ needs.test.result }}" = "success" ]
