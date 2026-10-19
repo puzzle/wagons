@@ -56,10 +56,8 @@ task :bundle => :set_rails_version do
 end
 
 task :set_rails_version do
-  if ENV['BUNDLE_GEMFILE']
-    version = File.read(ENV['BUNDLE_GEMFILE'])[/gem\s*'rails',\s*'(.*)'/, 1]
-    ENV['RAILS_VERSION'] = version
-  end
+  rails = Gem.loaded_specs['rails']&.version
+  ENV['RAILS_VERSION'] ||= rails.to_s if rails
 end
 
 namespace :test do
