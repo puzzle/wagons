@@ -63,12 +63,13 @@ class WagonTasksTest < ActiveSupport::TestCase
   end
 
   def install_bundles
+    env = { 'RAILS_VERSION' => Rails::VERSION::STRING }
     [DUMMY_DIR, WAGON_DIR].each do |dir|
       Bundler.with_unbundled_env do
         Dir.chdir(dir) do
-          next if system('bundle check', out: File::NULL, err: File::NULL)
+          next if system(env, 'bundle check', out: File::NULL, err: File::NULL)
 
-          system('bundle install --local || bundle install') ||
+          system(env, 'bundle install --local || bundle install') ||
             raise("could not install bundle in #{dir}")
         end
       end
