@@ -89,7 +89,7 @@ FIN
 #
 # To create a Wagonfile suitable for development, run 'rake wagon:file'
 wagonfile = File.expand_path('../Wagonfile', __FILE__)
-eval(File.read(wagonfile)) if File.exist?(wagonfile)"
+eval(File.read(wagonfile), binding, wagonfile) if File.exist?(wagonfile)"
       end
     end
   end
