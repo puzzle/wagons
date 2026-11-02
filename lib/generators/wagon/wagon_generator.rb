@@ -14,8 +14,10 @@ class WagonGenerator < Rails::Generators::NamedBase #:nodoc:
 
     # do this whole manual traversal to be able to replace every single file
     # individually in the application.
-    all_templates.each do |file|
-      if File.basename(file) == '.empty_directory'
+    all_templates.each do |file, source|
+      if File.symlink?(source)
+        create_link(File.join(destination_root, file), File.readlink(source))
+      elsif File.basename(file) == '.empty_directory'
         file = File.dirname(file)
         directory(file, File.join(destination_root, file))
       else
@@ -27,10 +29,11 @@ class WagonGenerator < Rails::Generators::NamedBase #:nodoc:
   private
 
   def all_templates
-    source_paths.map do |path|
+    # later assignments win, so the application templates must come last
+    source_paths.reverse.each_with_object({}) do |path, templates|
       Dir[File.join(path, '**', '{*,.[a-z]*}')].
-          select { |f| File.file?(f) }.
-          map { |f| f.sub(path + File::SEPARATOR, '') }
-    end.flatten.uniq.sort
+          select { |f| File.file?(f) || File.symlink?(f) }.
+          each { |f| templates[f.sub(path + File::SEPARATOR, '')] = f }
+    end.sort.to_h
   end
 end
